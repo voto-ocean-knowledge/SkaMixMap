@@ -16,3 +16,10 @@ Check out the [startup TODO list](https://github.com/voto-ocean-knowledge/SkaMix
 7. SST from platforms is overlain on these plots where available
 
 
+# Data sources
+
+### Satellite data
+
+Using WMTS system for nrt web tiled data. The first source is a CMEMS global reanalysis of temperature data. Seems to have a couple of days lag SST_GLO_PHY_L4_NRT_010_043/cmems_obs-sst_glo_phy_nrt_l4_P1D-m_202303/analysed_sst
+
+A more nrt product comes from the Baltic specifically. It's L3 https://data.marine.copernicus.eu/product/SST_BAL_SST_L3S_NRT_OBSERVATIONS_010_032/services
