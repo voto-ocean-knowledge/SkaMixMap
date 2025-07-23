@@ -6,6 +6,7 @@ See the map at [https://voto-ocean-knowledge.github.io/SkaMixMap](https://voto-o
 
 - Demo leaflet map with a couple of CMEMS satellite layers (hard coded dates! These are not the latest live datasets!)
 - Demo location data pulled from a glider
+- Demo location from old drifter unit read from email
 
 ### Steps to run locally
 
