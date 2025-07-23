@@ -37,3 +37,25 @@ Check out the [startup TODO list](https://github.com/voto-ocean-knowledge/SkaMix
 Using WMTS system for nrt web tiled data. The first source is a CMEMS global reanalysis of temperature data. Seems to have a couple of days lag SST_GLO_PHY_L4_NRT_010_043/cmems_obs-sst_glo_phy_nrt_l4_P1D-m_202303/analysed_sst
 
 A more nrt product comes from the Baltic specifically. It's L3 https://data.marine.copernicus.eu/product/SST_BAL_SST_L3S_NRT_OBSERVATIONS_010_032/services
+
+
+# Automation
+
+### Getting data from emails
+
+This requires a bit of setting up. Here's the prep work:
+
+1. Create a gmail account that all incoming data will be sent to
+2. Go to google account >> 2-step verification >> turn on 2-step verification
+3. setup whatever 2FA you prefer
+4. create an app password https://myaccount.google.com/u/7/apppasswords explained at https://support.google.com/accounts/answer/185833?hl=en
+5. Copy that password into the secrets file `email_secrets.json` here in the root directory. It should look like
+
+```json
+{
+  "email_username": "<account_name>@gmail.com",
+  "email_password": "<16 char app password with no spaces>"
+}
+```
+
+Now you're setup to read email from python with the `src/fetch_location_data.py` script
