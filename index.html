@@ -30,12 +30,16 @@
 </head>
 <body>
 
-<h1> SkaMix operational map app </h1>
+<h1> SkaMix operational map</h1>
+
+<h3>Work in progress!</h3>
+	<p>this map will display the near real time locations of vessels and autonomous platforms during the SkaMix project.</p><p> For now, it has some old autonomous platform data and near real time SST from CMEMS</p>
 
 
 <div id='map'></div>
 
 <script src="data/demo/sample-geojson.js" type="text/javascript"></script>
+<script src="satellite.js" type="text/javascript"></script>
 
 <script>
 	const map = L.map('map').setView([58, 12], 6);
@@ -55,17 +59,17 @@ var template =
 var sst_l4 = L.tileLayer(template, {
   layer: 'SST_GLO_PHY_L4_NRT_010_043/cmems_obs-sst_glo_phy_nrt_l4_P1D-m_202303/analysed_sst',
   tileMatrixSet: 'EPSG:3857',
-  time: '2025-07-20T12:00:00.000Z',
+  time: l4_sst,
   noWrap: true,
-  attribution: '©Copernicus CMEMS'
+  attribution: '© <a href="https://help.marine.copernicus.eu/en/articles/4444611-how-to-cite-copernicus-marine-products-and-services">Copernicus CMEMS</a>'
 }).addTo(map);
 
 var sst_l3_baltic = L.tileLayer(template, {
   layer: 'SST_BAL_SST_L3S_NRT_OBSERVATIONS_010_032/DMI-BALTIC-SST-L3S-NRT-OBS_FULL_TIME_SERIE_201904/sea_surface_temperature',
   tileMatrixSet: 'EPSG:3857',
-  time: '2025-07-22T00:00:00.000Z',
+  time: l3_sst,
   noWrap: true,
-  attribution: '©Copernicus CMEMS'
+  attribution: '© <a href="https://help.marine.copernicus.eu/en/articles/4444611-how-to-cite-copernicus-marine-products-and-services">Copernicus CMEMS</a>'
 })
 
 
@@ -101,6 +105,8 @@ var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
 </script>
 
 <p>Check out the layers with the tile dropdown in the top right corner of the map</p>
+
+<br><b>satellite product times</b>:<br>l4_sst satellite product from 2025-07-20T12:00:00.000Z<br>l3_sst satellite product from 2025-07-22T00:00:00.000Z<br>
 
 <p>Source code at <a href="https://github.com/voto-ocean-knowledge/SkaMixMap">https://github.com/voto-ocean-knowledge/SkaMixMap</a></p>
 
