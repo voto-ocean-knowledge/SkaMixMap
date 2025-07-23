@@ -1,6 +1,18 @@
 # SkaMixMap
 
+### Current status
+
 See the map at [https://voto-ocean-knowledge.github.io/SkaMixMap](https://voto-ocean-knowledge.github.io/SkaMixMap/) work in progress!
+
+- Demo leaflet map with a couple of CMEMS satellite layers (hard coded dates! These are not the latest live datasets!)
+- Demo location data pulled from a glider
+
+### Steps to run locally
+
+- Clone or download this repo
+- Double click on index.html to see it in your browser
+- ... that's it!
+- If you want to remake/remix the input data, run the script [`src/make_demo_geojson.py`](https://github.com/voto-ocean-knowledge/SkaMixMap/blob/main/src/make_demo_geojson.py). Requirements are in requirements.txt
 
 This repo hosts code for near real time visualisation of diverse surface and subsurface platform locations, as well as earth observation data, for field co-ordination during the SkaMix project.
 
