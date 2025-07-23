@@ -35,7 +35,7 @@
 
 <div id='map'></div>
 
-<script src="sample-geojson.js" type="text/javascript"></script>
+<script src="data/demo/sample-geojson.js" type="text/javascript"></script>
 
 <script>
 	const map = L.map('map').setView([58, 12], 7);
@@ -57,7 +57,7 @@ var sst_l4 = L.tileLayer(template, {
   time: '2025-07-20T12:00:00.000Z',
   noWrap: true,
   attribution: '©Copernicus CMEMS'
-})
+}).addTo(map);
 
 var sst_l3_baltic = L.tileLayer(template, {
   layer: 'SST_BAL_SST_L3S_NRT_OBSERVATIONS_010_032/DMI-BALTIC-SST-L3S-NRT-OBS_FULL_TIME_SERIE_201904/sea_surface_temperature',
@@ -68,6 +68,23 @@ var sst_l3_baltic = L.tileLayer(template, {
 })
 
 
+
+// add location data from geojson
+
+// Function adds popup content to markers
+function popupText(feature, layer) {
+	layer.bindPopup(feature.properties.popupContent);}
+
+// Add demo data incorporating style and popup info from the geojson
+L.geoJSON(input_locations, {
+		style(feature) {
+			return feature.properties && feature.properties.style;
+		},
+		onEachFeature: popupText}).addTo(map);
+
+//const nrt_loc_layer = L.geoJSON(input_locations).addTo(map);
+
+// map controls here
 
 var baseMaps = {
     "OpenStreetMap": osm,
