@@ -12,6 +12,18 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+	<script src="static/leaflet.nauticalscale.js" type="text/javascript"></script>
+	<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/gokertanrisever/leaflet-ruler@master/src/leaflet-ruler.css"
+    integrity="sha384-P9DABSdtEY/XDbEInD3q+PlL+BjqPCXGcF8EkhtKSfSTr/dS5PBKa9+/PMkW2xsY"
+	crossorigin="anonymous"/>
+	<script
+    src="https://cdn.jsdelivr.net/gh/gokertanrisever/leaflet-ruler@master/src/leaflet-ruler.js"
+    integrity="sha384-8SqKZR7V8uOetpjjbcNJHvwuHpb074WS0UXjCLhzfJUqYn3B/uWx1WVv5mwRp1mV"
+    crossorigin="anonymous"></script>
+	<script src="data/demo/sample-geojson.js" type="text/javascript"></script>
+	<script src="satellite.js" type="text/javascript"></script>
 
 	<style>
 		html, body {
@@ -38,8 +50,6 @@
 
 <div id='map'></div>
 
-<script src="data/demo/sample-geojson.js" type="text/javascript"></script>
-<script src="satellite.js" type="text/javascript"></script>
 
 <script>
 	const map = L.map('map').setView([58, 12], 6);
@@ -56,24 +66,38 @@
 var template =
   'https://wmts.marine.copernicus.eu/teroWmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={layer}&STYLE=cmap:thermal,range:290/298&FORMAT=image/png&TILEMATRIXSET={tileMatrixSet}&TILEMATRIX={z}&time={time}&TILEROW={y}&TILECOL={x}'
 
+let standard = {};
+standard['tileMatrixSet'] = "EPSG:3857";
+standard['noWrap'] = true;
+standard['attribution'] = '© <a href="https://help.marine.copernicus.eu/en/articles/4444611-how-to-cite-copernicus-marine-products-and-services">Copernicus CMEMS</a>';
+
 var sst_l4 = L.tileLayer(template, {
-  layer: 'SST_GLO_PHY_L4_NRT_010_043/cmems_obs-sst_glo_phy_nrt_l4_P1D-m_202303/analysed_sst',
-  tileMatrixSet: 'EPSG:3857',
-  time: l4_sst,
-  noWrap: true,
-  attribution: '© <a href="https://help.marine.copernicus.eu/en/articles/4444611-how-to-cite-copernicus-marine-products-and-services">Copernicus CMEMS</a>'
+  layer: 'SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/DMI-BALTIC-SST-L4-NRT-OBS_FULL_TIME_SERIE/analysed_sst',
+  time: sst_l4_time,
+  ...standard
 }).addTo(map);
 
-var sst_l3_baltic = L.tileLayer(template, {
+var sst_l3 = L.tileLayer(template, {
   layer: 'SST_BAL_SST_L3S_NRT_OBSERVATIONS_010_032/DMI-BALTIC-SST-L3S-NRT-OBS_FULL_TIME_SERIE_201904/sea_surface_temperature',
-  tileMatrixSet: 'EPSG:3857',
-  time: l3_sst,
-  noWrap: true,
-  attribution: '© <a href="https://help.marine.copernicus.eu/en/articles/4444611-how-to-cite-copernicus-marine-products-and-services">Copernicus CMEMS</a>'
+  time: sst_l3_time,
+  ...standard
 })
 
+var template_ssh =
+  'https://wmts.marine.copernicus.eu/teroWmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={layer}&FORMAT=image/png&TILEMATRIXSET={tileMatrixSet}&TILEMATRIX={z}&time={time}&TILEROW={y}&TILECOL={x}}&STYLE=cmap:viridis'
 
 
+var ssh_l4 = L.tileLayer(template_ssh, {
+  layer: 'SEALEVEL_EUR_PHY_L4_NRT_008_060/cmems_obs-sl_eur_phy-ssh_nrt_allsat-l4-duacs-0.0625deg_P1D_202506/sla',
+  time: ssh_l4_time,
+  ...standard
+})
+
+var adt_l4 = L.tileLayer(template_ssh, {
+  layer: 'SEALEVEL_EUR_PHY_L4_NRT_008_060/cmems_obs-sl_eur_phy-ssh_nrt_allsat-l4-duacs-0.0625deg_P1D_202506/adt',
+  time: ssh_l4_time,
+  ...standard
+})
 // add location data from geojson
 
 // Function adds popup content to markers
@@ -97,16 +121,25 @@ var baseMaps = {
 
 var overlayMaps = {
     "SST L4": sst_l4,
-    "SST L3": sst_l3_baltic
+    "SST L3": sst_l3,
+    "SSH L4": ssh_l4,
+    "ADT L4": adt_l4
 };
 
-var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+var controlPanel = L.control.layers(baseMaps, overlayMaps).addTo(map);
+map.addControl(new L.Control.ScaleNautic({
+		maxWidth: 150,
+		metric: true,
+		imperial: false,
+		nautic: true
+	}));
+L.control.ruler().addTo(map);
 
 </script>
 
 <p>Check out the layers with the tile dropdown in the top right corner of the map</p>
 
-<br><b>satellite product times</b>:<br>l4_sst satellite product from 2025-07-20T12:00:00.000Z<br>l3_sst satellite product from 2025-07-22T00:00:00.000Z<br>
+<br><b>satellite product times</b>:<br><b>sst_l4</b> Analysed sea surface temperature (analysed_sst) date: <b>2025-07-24T00</b> min: <b>273.56</b> max: <b>285.1</b> <br><b>sst_l3</b> Sea surface foundation temperature (sea_surface_temperature) date: <b>2025-07-24T00</b> min: <b>274.17</b> max: <b>283.33</b> <br><b>ssh_l4</b> Sea level anomaly (sla) date: <b>2025-07-24T00</b> min: <b>-0.01</b> max: <b>0.346</b> <br><b>adt_l4</b> Absolute dynamic topography (adt) date: <b>2025-07-24T00</b> min: <b>-0.359</b> max: <b>0.671</b> <br>
 
 <p>Source code at <a href="https://github.com/voto-ocean-knowledge/SkaMixMap">https://github.com/voto-ocean-knowledge/SkaMixMap</a></p>
 
