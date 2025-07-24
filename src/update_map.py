@@ -21,7 +21,7 @@ if __name__ == '__main__':
     )
     start = datetime.datetime.now()
     _log.info("START")
-    fetch_drifter_data.parse_mail()
+    fetch_drifter_data.main()
     fetch_heincke_data.main()
     make_demo_geojson.main()
     satellite_setup.main()

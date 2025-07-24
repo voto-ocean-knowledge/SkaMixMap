@@ -148,5 +148,8 @@ def drifter_locations_from_mail():
     return
 
 
-if __name__ == '__main__':
+def main():
     drifter_locations_from_mail()
+
+if __name__ == '__main__':
+    main()
