@@ -1,23 +1,31 @@
 # SkaMixMap
 
-### Current status
-
-See the map at [https://voto-ocean-knowledge.github.io/SkaMixMap](https://voto-ocean-knowledge.github.io/SkaMixMap/) work in progress!
-
-- Demo leaflet map with a couple of CMEMS satellite layers (hard coded dates! These are not the latest live datasets!)
-- Demo location data pulled from a glider
-- Demo location from old drifter unit read from email
-
-### Steps to run locally
-
-- Clone or download this repo
-- Double click on index.html to see it in your browser
-- ... that's it!
-- If you want to remake/remix the input data, run the script [`src/make_demo_geojson.py`](https://github.com/voto-ocean-knowledge/SkaMixMap/blob/main/src/make_demo_geojson.py). Requirements are in requirements.txt
+See the map at [https://voto-ocean-knowledge.github.io/SkaMixMap](https://voto-ocean-knowledge.github.io/SkaMixMap/)
 
 This repo hosts code for near real time visualisation of diverse surface and subsurface platform locations, as well as earth observation data, for field co-ordination during the SkaMix project.
 
 Check out the [startup TODO list](https://github.com/voto-ocean-knowledge/SkaMixMap/issues/1) for action items
+
+### Current status
+
+- Demo leaflet map with CMEMS satellite layers (Dates of these layers are set at the last update to main)
+- Demo location data pulled from a glider
+- Demo location from old drifter unit read from email
+- Location data from R/V Heincke
+
+### Steps to run locally
+
+- Clone or download this repo
+- Double-click on index.html to see it in your browser
+- ... that's it!
+- If you want to remake/remix the input data, run the script [`src/update_map.py`](https://github.com/voto-ocean-knowledge/SkaMixMap/blob/main/src/update_map.py). Requirements are in requirements.txt. Note that if you want drifter locations you'll need to set up a gmail address, see instructions further down in this README file
+
+```bash
+
+pip install -r requirements.txt
+python src/update_map.py
+```
+
 
 
 ### Envisaged dataflow
@@ -44,6 +52,7 @@ We get SSH from the [SL TAC](https://marine.copernicus.eu/about/producers/sl-tac
 
 - L4 Sea Surface Height and Dynamic Topography https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_L4_NRT_008_060/description
 
+See the app for full list and attributions
 
 # Automation
 
@@ -64,4 +73,4 @@ This requires a bit of setting up. Here's the prep work:
 }
 ```
 
-Now you're setup to read email from python with the `src/fetch_location_data.py` script
+Now you're set up to read email from python with the `src/fetch_drifter_data.py` script

@@ -34,7 +34,7 @@ def get_satellite_settings():
         sat_dict["layer_datetime"] = layer_dict['Dimension']['Default']
         sat_dict["min_val"] = float(layer_dict['ows:Metadata']['VariableInformation']['MinimumValue'])
         sat_dict["max_val"] = float(layer_dict['ows:Metadata']['VariableInformation']['MaximumValue'])
-        _log.info(f"{layer_name}: {sat_dict}")
+        _log.info(f"satellite layer info {layer_name}: {sat_dict}")
     return satellite_dicts
 
 def write_satellite_settings(ddict):

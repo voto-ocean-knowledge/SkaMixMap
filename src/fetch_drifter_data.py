@@ -21,8 +21,6 @@ processed_location_data = Path(root_dir) / "data" / "processed_location_data"
 if not processed_location_data.exists():
     processed_location_data.mkdir(parents=True)
 
-with open(f"{root_dir}/email_secrets.json") as json_file:
-    secrets = json.load(json_file)
 
 mail_alarms_json = Path("mail_alarms.json")
 
@@ -83,19 +81,33 @@ def extract_loc_from_sbd(fn):
         existing_rows = df[(df['unit_id'] == unit_id) & (df['message_id'] == message_id) & (df['source'] == source) ]
         if existing_rows.empty:
             df.loc[len(df)] = ddict
+            _log.info(f"adding drifter location  {ddict}")
     else:
         df = pd.DataFrame(ddict, index=[0])
     df = df.sort_values("message_id")
     df.to_csv(unit_csv, index=False)
 
-def parse_mail():
+def drifter_locations_from_mail():
+    secrets_file = Path(root_dir) / "email_secrets.json"
+    if not secrets_file.exists():
+        _log.error(f"Did not find secrets file {secrets_file}. Cannot read emails. Skipping")
+        return
+    with open(f"{root_dir}/email_secrets.json") as json_file:
+        secrets = json.load(json_file)
     # Check gmail account for emails
     mail = imaplib.IMAP4_SSL("imap.gmail.com")
-    mail.login(secrets["email_username"], secrets["email_password"])
+    try:
+        mail.login(secrets["email_username"], secrets["email_password"])
+    except imaplib.IMAP4.error:
+        _log.error(f"Incorrect credentials in {secrets_file}. Skipping email read")
+        return
     mail.select("inbox")
     result, data = mail.search(None, '(SUBJECT "SBD Msg From Unit")')
     mail_ids = data[0]
     id_list = mail_ids.split()
+    if not id_list:
+        _log.warning("No matching emails found. Skipping")
+        return
 
     # check latest 10 emails
     for i in id_list[-10:]:
@@ -136,5 +148,8 @@ def parse_mail():
     return
 
 
+def main():
+    drifter_locations_from_mail()
+
 if __name__ == '__main__':
-    parse_mail()
+    main()
