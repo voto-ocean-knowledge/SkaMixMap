@@ -7,7 +7,9 @@ import sys
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, folder)
+from fetch_heincke_data import heincke_proc_csv
 data_dir = Path(folder) / 'data'
+loc_dir = data_dir / "processed_location_data"
 
 features_list = []
 
@@ -60,7 +62,7 @@ def glider_locs_to_json():
     point_dict = {
                 "type": "Feature",
                 "properties": {
-                    "popupContent": f"SEA078 location at <br>{df['time (UTC)'].values[-1]}"
+                    "popupContent": f"<a href='https://observations.voiceoftheocean.org/SEA078/M29'>SEA078 M29</a><br>location at <br>{df['time (UTC)'].values[-1]}"
                 },
                 "geometry": {"type": "Point", "coordinates": [coords[-1][0], coords[-1][1]]
                 }
@@ -70,7 +72,6 @@ def glider_locs_to_json():
 
 
 def drifter_locs_to_json():
-    loc_dir = data_dir / "processed_location_data"
     if not loc_dir.exists():
         return
     drifter_loc_files = list(loc_dir.glob("unit_*.csv"))
@@ -96,7 +97,7 @@ def drifter_locs_to_json():
         point_dict = {
             "type": "Feature",
             "properties": {
-                "popupContent": f"unit {unit_id} location at <br>{str(df['datetime'].values[-1])[:19]}"
+                "popupContent": f"unit {unit_id}<br>location at <br>{str(df['datetime'].values[-1])[:19]}"
             },
             "geometry": {"type": "Point", "coordinates": [coords[-1][0], coords[-1][1]]
                          }
@@ -104,7 +105,44 @@ def drifter_locs_to_json():
         features_list.append(line_dict)
         features_list.append(point_dict)
         
-if __name__ == '__main__':
+        
+def heincke_locs_to_json():
+    if not heincke_proc_csv.exists():
+        return
+
+    df = pd.read_csv(heincke_proc_csv, parse_dates=['datetime'])
+    coords = lon_lat_to_coords(df.lon.values, df.lat.values)
+
+    line_dict = {
+        "type": "Feature",
+        "properties": {
+            "popupContent": f'<a href="https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html">R/V Heincke</a>',
+            "style": {
+                "weight": 4,
+                "color": "white",
+                "opacity": 0.8,
+            },
+        },
+        "geometry": {"type": "LineString", "coordinates": coords},
+    }
+    point_dict = {
+        "type": "Feature",
+        "properties": {
+            "popupContent": f'<a href="https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html">R/V Heincke</a><br>location at <br>{str(df["datetime"].values[-1])[:19]}'
+        },
+        "geometry": {"type": "Point", "coordinates": [coords[-1][0], coords[-1][1]]
+                     }
+    }
+    features_list.append(line_dict)
+    features_list.append(point_dict)
+
+
+def main():
     glider_locs_to_json()
     drifter_locs_to_json()
+    heincke_locs_to_json()
     write_geojson(features_list)
+
+
+if __name__ == '__main__':
+    main()
