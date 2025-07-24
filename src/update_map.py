@@ -26,4 +26,4 @@ if __name__ == '__main__':
     make_demo_geojson.main()
     satellite_setup.main()
     end = datetime.datetime.now()
-    _log.info(f"END elapsed time: {end - start}")
+    _log.info(f"END elapsed time: {round((end - start).total_seconds(), 1)} seconds")

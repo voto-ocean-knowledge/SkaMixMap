@@ -35,12 +35,12 @@ def clean_locations(df):
     df = df[(~np.isnan(df.lon)) & (~np.isnan(df.lat))] # nans
     df = df[~((df.lon>19.3) & (df.lat<55.4))] #GPS spoofing
     df = df[df.lat>1] # null island
-    _log.info(f"removed {before - len(df)} rows of data ({round(100 * (1 - len(df)/before), 3)} %)")
+    _log.info(f"Cleaning bad locations: removed {before - len(df)} rows of data ({round(100 * (1 - len(df)/before), 3)} %)")
     return df
 
 def combine_heincke_data():
     df = pd.read_csv(heincke_raw_csv, sep='\t', parse_dates=['datetime'])
-    _log.info(f"reading in {len(df)} rows of downloaded data")
+    _log.info(f"reading in {len(df)} rows of downloaded data from R/V Heincke")
     df = df[['datetime',
              'vessel:heincke:trimble:longitude (mean) []',
              'vessel:heincke:trimble:latitude (mean) []', ]]
@@ -52,9 +52,9 @@ def combine_heincke_data():
     else:
         df_full = pd.DataFrame()
     if df.empty:
-        _log.info("no new data")
+        _log.info("no new data from Heicke")
         return
-    _log.info(f"adding {len(df)} rows of new data")
+    _log.info(f"adding {len(df)} rows of new locations from R/V Heincke")
     df_full = pd.concat([df_full, df])
     df_full = clean_locations(df_full)
     df_full.to_csv(heincke_proc_csv, index=False)
