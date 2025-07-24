@@ -46,14 +46,12 @@ def write_satellite_settings(ddict):
 def write_sat_to_html(ddict):
     with open(satellite_html, "r") as f:
         contents = f.readlines()
-    new_info = "<br><b>satellite product times</b>:<br>"
+    new_info = "<h3>satellite product times 🛰️</h3><ul>"
     for key, var in ddict.items():
-        dt = var['layer_datetime']
-        if dt[:4] == "2025":
-            dt = dt[:13]
-        newstr = f"<b>{key}</b> {var['title']} date: <b>{dt}</b> min: <b>{round(var['min_val'], 3)}</b> max: <b>{round(var['max_val'], 3)}</b> <br>"
+        dt = var['layer_datetime'][:11]
+        newstr = f"<li><b>{key}</b> date: <b>{dt}</b> min: <b>{round(var['min_val'], 3)}</b> max: <b>{round(var['max_val'], 3)}</b> variable: {var['title']} </li>"
         new_info += newstr
-    new_info+='\n'
+    new_info+='</ul>\n'
     for i, item in enumerate(contents):
         if "satellite product times" in item:
             contents[i] = new_info

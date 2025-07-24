@@ -41,8 +41,7 @@ Using WMTS system for nrt web tiled data. The first source is a CMEMS global rea
 - L4 https://data.marine.copernicus.eu/product/SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/services
 
 We get SST from the [SL TAC](https://marine.copernicus.eu/about/producers/sl-tac)
-- L4 Sea Surface Height https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_L4_NRT_008_060/description
-- L4 Mean Dynamic Topography https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_MDT_L4_STATIC_008_070/description
+- L4 Sea Surface Height and Dynamic Topography https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_L4_NRT_008_060/description
 
 
 # Automation
