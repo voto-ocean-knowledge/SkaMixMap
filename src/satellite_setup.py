@@ -34,7 +34,7 @@ def get_satellite_settings():
         sat_dict["layer_datetime"] = layer_dict['Dimension']['Default']
         sat_dict["min_val"] = float(layer_dict['ows:Metadata']['VariableInformation']['MinimumValue'])
         sat_dict["max_val"] = float(layer_dict['ows:Metadata']['VariableInformation']['MaximumValue'])
-        print(layer_name, sat_dict)
+        _log.info(f"{layer_name}: {sat_dict}")
     return satellite_dicts
 
 def write_satellite_settings(ddict):
@@ -61,8 +61,13 @@ def write_sat_to_html(ddict):
     with open(satellite_html, "w") as f:
         contents = "".join(contents)
         f.write(contents)
-        
-if __name__ == '__main__':
+
+
+def main():
     sat_dicts = get_satellite_settings()
     write_satellite_settings(sat_dicts)
     write_sat_to_html(sat_dicts)
+
+
+if __name__ == '__main__':
+    main()
