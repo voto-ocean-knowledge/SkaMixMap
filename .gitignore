@@ -208,3 +208,4 @@ __marimo__/
 *secrets*
 data/raw_mail_data
 data/processed_location_data/
+.idea

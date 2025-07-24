@@ -35,9 +35,14 @@ Check out the [startup TODO list](https://github.com/voto-ocean-knowledge/SkaMix
 
 ### Satellite data
 
-Using WMTS system for nrt web tiled data. The first source is a CMEMS global reanalysis of temperature data. Seems to have a couple of days lag SST_GLO_PHY_L4_NRT_010_043/cmems_obs-sst_glo_phy_nrt_l4_P1D-m_202303/analysed_sst
+Using WMTS system for nrt web tiled data. The first source is a CMEMS global reanalysis of temperature data. we are using two Baltic specific products from [SST TAC](https://marine.copernicus.eu/about/producers/sst-tac):
 
-A more nrt product comes from the Baltic specifically. It's L3 https://data.marine.copernicus.eu/product/SST_BAL_SST_L3S_NRT_OBSERVATIONS_010_032/services
+- L3 https://data.marine.copernicus.eu/product/SST_BAL_SST_L3S_NRT_OBSERVATIONS_010_032/description
+- L4 https://data.marine.copernicus.eu/product/SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/services
+
+We get SST from the [SL TAC](https://marine.copernicus.eu/about/producers/sl-tac)
+- L4 Sea Surface Height https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_L4_NRT_008_060/description
+- L4 Mean Dynamic Topography https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_MDT_L4_STATIC_008_070/description
 
 
 # Automation
