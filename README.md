@@ -24,9 +24,9 @@ Check out the [startup TODO list](https://github.com/voto-ocean-knowledge/SkaMix
 
 1. nrt locations from drifters, autonomous platforms and vessels are emailed to votodatain@gmail.com in a variety of formats
 2. Every hour, a python script running as a cronjob checks the inbox for new emails
-3. The python script reads the email and converts the locations to geojson
-4. geojson locations and tracks are displayed on a leaflet map
-5. The leaflet map uses wmts web tiles to display multiple layers: bathy, SST, SSH etc.
+3. [X] The python script reads the email and converts the locations to geojson
+4. [X] geojson locations and tracks are displayed on a leaflet map
+5. [X] The leaflet map uses wmts web tiles to display multiple layers: bathy, SST, SSH etc.
 6. Additional static plots are made with more detailed and scaled SST raster data from satellite/reanalysis products
 7. SST from platforms is overlain on these plots where available
 
@@ -35,12 +35,13 @@ Check out the [startup TODO list](https://github.com/voto-ocean-knowledge/SkaMix
 
 ### Satellite data
 
-Using WMTS system for nrt web tiled data. The first source is a CMEMS global reanalysis of temperature data. we are using two Baltic specific products from [SST TAC](https://marine.copernicus.eu/about/producers/sst-tac):
+Using WMTS system for nrt web tiled data. we are using two Baltic specific products from [SST TAC](https://marine.copernicus.eu/about/producers/sst-tac):
 
 - L3 https://data.marine.copernicus.eu/product/SST_BAL_SST_L3S_NRT_OBSERVATIONS_010_032/description
 - L4 https://data.marine.copernicus.eu/product/SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/services
 
-We get SST from the [SL TAC](https://marine.copernicus.eu/about/producers/sl-tac)
+We get SSH from the [SL TAC](https://marine.copernicus.eu/about/producers/sl-tac)
+
 - L4 Sea Surface Height and Dynamic Topography https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_L4_NRT_008_060/description
 
 
