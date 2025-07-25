@@ -22,7 +22,11 @@ def get_satellite_settings():
         'var_name': 'sla'},
         'adt_l4': {
         'url': 'https://wmts.marine.copernicus.eu/teroWmts/SEALEVEL_EUR_PHY_L4_NRT_008_060/cmems_obs-sl_eur_phy-ssh_nrt_allsat-l4-duacs-0.0625deg_P1D_202506',
-        'var_name': 'adt'}}
+        'var_name': 'adt'},
+        'chl_l4': {
+            'url': 'https://wmts.marine.copernicus.eu/teroWmts/OCEANCOLOUR_ATL_BGC_L4_NRT_009_116/cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D_202311',
+            'var_name': 'CHL'},
+    }
    # if 'analysed_sst' in ddict['ows:Identifier'] or 'sea_surface_temperature' in ddict['ows:Identifier']:
     for layer_name, sat_dict in satellite_dicts.items():
         req = requests.get(f"{sat_dict['url']}?request=GetCapabilities&service=WMS")
@@ -46,9 +50,9 @@ def write_satellite_settings(ddict):
 def write_sat_to_html(ddict):
     with open(satellite_html, "r") as f:
         contents = f.readlines()
-    new_info = "<h3>satellite product times 🛰️</h3><ul>"
+    new_info = "<h3>satellite product times and data ranges 🛰️</h3><ul>"
     for key, var in ddict.items():
-        dt = var['layer_datetime'][:11]
+        dt = var['layer_datetime'][:16]
         newstr = f"<li><b>{key}</b> date: <b>{dt}</b> min: <b>{round(var['min_val'], 3)}</b> max: <b>{round(var['max_val'], 3)}</b> variable: {var['title']} </li>"
         new_info += newstr
     new_info+='</ul>\n'
