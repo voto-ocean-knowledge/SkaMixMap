@@ -3,12 +3,20 @@ from pathlib import Path
 import logging
 import requests
 import xmltodict
+import matplotlib.pyplot as plt
+import numpy as np
+import cmocean.cm as cmo
 _log = logging.getLogger(__name__)
 
 root_dir = Path(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-satellite_settings = root_dir / "satellite.js"
+satellite_settings = root_dir / "static" / "satellite.js"
 satellite_html = root_dir / "index.html"
+
+manual_limits = {
+    "sst": {'min': 290,
+            'max': 297},
+}
 
 def get_satellite_settings():
     satellite_dicts = {'sst_l4': {
@@ -38,14 +46,41 @@ def get_satellite_settings():
         sat_dict["layer_datetime"] = layer_dict['Dimension']['Default']
         sat_dict["min_val"] = float(layer_dict['ows:Metadata']['VariableInformation']['MinimumValue'])
         sat_dict["max_val"] = float(layer_dict['ows:Metadata']['VariableInformation']['MaximumValue'])
+        sat_dict["units"] = layer_dict['ows:Metadata']['VariableInformation']['Unit']
+        if layer_dict['Style']:
+            if type(layer_dict['Style']) is dict:
+                sat_dict['cmap'] =  layer_dict['Style']['ows:Identifier'].split(':')[-1]
+            elif layer_dict['Style'][0]['@isDefault'] == 'true':
+                sat_dict['cmap'] =  layer_dict['Style'][0]['ows:Identifier'].split(':')[-1]
         _log.info(f"satellite layer info {layer_name}: {sat_dict}")
     return satellite_dicts
 
 def write_satellite_settings(ddict):
-    
     with open(satellite_settings, "w") as fout:
         for key, var in ddict.items():
             fout.write(f"var {key}_time = '{var['layer_datetime']}';\n")
+        for var_name, limits_dict in manual_limits.items():
+            for key, var in limits_dict.items():
+                fout.write(f"{var_name}_{key} = {var};\n")
+
+
+
+def write_graticule_settings():
+    with open(satellite_settings, "a") as fout:
+        levels = range(4, 15)
+        initial_lat_spacing = 8
+        lon_spacing_multiplier = 2
+        lat_list = []
+        lon_list = []
+        spacing = initial_lat_spacing
+        for level in levels:
+            lat_list.append({'start': level, 'end': level, 'interval': spacing})
+            lon_list.append({'start': level, 'end': level, 'interval': spacing * lon_spacing_multiplier})
+            spacing = spacing/2
+        graticule_dict = {'latitude': lat_list,
+                          'longitude': lon_list}
+        fout.write(f"var graticule_dict = {graticule_dict};\n")
+
 
 def write_sat_to_html(ddict):
     with open(satellite_html, "r") as f:
@@ -64,11 +99,40 @@ def write_sat_to_html(ddict):
         contents = "".join(contents)
         f.write(contents)
 
+def make_color_bars(ddict):
+    fig, ax = plt.subplots()
+    step = 0
+    standard_cmaps = plt.colormaps()
+    for key, layer_dict in ddict.items():
+        if key == 'sst_l3':
+            continue
+        print(key, layer_dict['min_val'], layer_dict['max_val'], layer_dict['cmap'], layer_dict['units'])
+        label = f"{key} {layer_dict['title']} [{layer_dict['units']}]"
+        step += 1
+        cmap = layer_dict['cmap']
+        if cmap not in standard_cmaps:
+            cmap = f"cmo.{cmap}"
+        vmin = layer_dict['min_val']
+        vmax = layer_dict['max_val']
+        if key[:3] in manual_limits.keys():
+            # We are hard-coding the temperature atm
+            vmin = manual_limits[key[:3]]['min']
+            vmax = manual_limits[key[:3]]['max']
+        x = np.linspace(vmin, vmax, 100)[np.newaxis, :]
+        mappable = ax.imshow(x, aspect='auto', cmap=cmap)
+        cbar_ax = fig.add_axes([0.15, 0.25 - 0.18 * step, 1, 0.08])
+        plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label=label)
+    ax.remove()
+    plt.savefig(root_dir / "static" / "colorbars.png", bbox_inches="tight")#, transparent=True)
+
 
 def main():
     sat_dicts = get_satellite_settings()
     write_satellite_settings(sat_dicts)
     write_sat_to_html(sat_dicts)
+    make_color_bars(sat_dicts)
+    write_graticule_settings()
+    make_color_bars(sat_dicts)
 
 
 if __name__ == '__main__':
