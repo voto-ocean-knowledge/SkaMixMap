@@ -80,21 +80,22 @@ class CreateGeojson:
         for csv in loc_dir.glob("*.csv"):
             fn = csv.name
             df = pd.read_csv(csv, parse_dates=['datetime'])
-            line_style = {
-                "weight": 4,
-                "opacity": 0.8,
-            }
+
             if 'platforms_time_filter' in user_dict.keys():
                 start = user_dict["platforms_time_filter"]['start']
                 end = user_dict["platforms_time_filter"]['end']
                 df = time_filter(df, start, end)
             if df.empty:
                 continue
+
+            line_style = {
+                "weight": 4,
+                "opacity": 0.8,
+            }
             if "heincke" in fn:
                 line_popup =  f'<a href="https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html">R/V Heincke</a>'
                 point_popup = f'<a href="https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html">R/V Heincke</a><br>location at <br>{str(df["datetime"].values[-1])[:19]}'
                 line_style["color"] = "white"
-
             elif "glider" in fn:
                 line_popup = f"glider track <br> <a href='https://observations.voiceoftheocean.org/SEA078/M29'>SEA078 M29</a>"
                 point_popup = f"<a href='https://observations.voiceoftheocean.org/SEA078/M29'>SEA078 M29</a><br>location at <br>{df['datetime'].values[-1]}"
@@ -106,6 +107,7 @@ class CreateGeojson:
             else:
                 _log.warning(f"unkown data source {csv}. Skipping")
                 continue
+
             line_dict = locations_to_geojson_line(df, line_popup, line_style)
             self.json_features_list.append(line_dict)
             point_dict = locations_to_geojson_point(df, point_popup)

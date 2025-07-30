@@ -21,7 +21,7 @@ def get_satellite_settings():
         'url': 'https://wmts.marine.copernicus.eu/teroWmts/SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/DMI-BALTIC-SST-L4-NRT-OBS_FULL_TIME_SERIE',
         'var_name': 'analysed_sst'},
         'sst_l3': {
-        'url': 'https://wmts.marine.copernicus.eu/teroWmts/SST_BAL_SST_L3S_NRT_OBSERVATIONS_010_032/DMI-BALTIC-SST-L3S-NRT-OBS_FULL_TIME_SERIE_201904',
+        'url': 'https://wmts.marine.copernicus.eu/teroWmts/SST_ATL_PHY_L3S_NRT_010_037/cmems_obs-sst_atl_phy_nrt_l3s_P1D-m_202211',
         'var_name': 'sea_surface_temperature'},
         'ssh_l4': {
         'url': 'https://wmts.marine.copernicus.eu/teroWmts/SEALEVEL_EUR_PHY_L4_NRT_008_060/cmems_obs-sl_eur_phy-ssh_nrt_allsat-l4-duacs-0.0625deg_P1D_202506',

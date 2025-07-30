@@ -78,9 +78,9 @@ var sst_l4 = L.tileLayer(template, {
   time: sst_l4_time,
   ...standard
 }).addTo(map);
-
+//https://wmts.marine.copernicus.eu/teroWmts/SST_ATL_PHY_L3S_NRT_010_037/cmems_obs-sst_atl_phy_nrt_l3s_P1D-m_202211?request=GetCapabilities&service=WMS
 var sst_l3 = L.tileLayer(template, {
-  layer: 'SST_BAL_SST_L3S_NRT_OBSERVATIONS_010_032/DMI-BALTIC-SST-L3S-NRT-OBS_FULL_TIME_SERIE_201904/sea_surface_temperature',
+  layer: 'SST_ATL_PHY_L3S_NRT_010_037/cmems_obs-sst_atl_phy_nrt_l3s_P1D-m_202211/sea_surface_temperature',
   time: sst_l3_time,
   ...standard
 })
@@ -159,7 +159,7 @@ L.control.ruler().addTo(map);
 	<br>
 	<img src="static/colorbars.png" class="img-fluid" alt="Colorbars of satellite products">
 
-<h3>satellite product times and data ranges 🛰️</h3><ul><li><b>sst_l4</b> date: <b>2025-07-23T00:00</b> min: <b>273.56</b> max: <b>285.1</b> variable: Analysed sea surface temperature (analysed_sst) </li><li><b>sst_l3</b> date: <b>2025-07-23T00:00</b> min: <b>274.17</b> max: <b>283.33</b> variable: Sea surface foundation temperature (sea_surface_temperature) </li><li><b>ssh_l4</b> date: <b>2025-07-23T00:00</b> min: <b>-0.01</b> max: <b>0.346</b> variable: Sea level anomaly (sla) </li><li><b>adt_l4</b> date: <b>2025-07-23T00:00</b> min: <b>-0.359</b> max: <b>0.671</b> variable: Absolute dynamic topography (adt) </li><li><b>chl_l4</b> date: <b>2025-07-23T00:00</b> min: <b>0.052</b> max: <b>2.424</b> variable: Chlorophyll-a concentration - Mean of the binned pixels (CHL) </li></ul>
+<h3>satellite product times and data ranges 🛰️</h3><ul><li><b>sst_l4</b> date: <b>2025-07-30T00:00</b> min: <b>273.56</b> max: <b>285.1</b> variable: Analysed sea surface temperature (analysed_sst) </li><li><b>sst_l3</b> date: <b>2025-07-29T00:00</b> min: <b>279.68</b> max: <b>302.49</b> variable: Sea surface subskin temperature (sea_surface_temperature) </li><li><b>ssh_l4</b> date: <b>2025-07-30T00:00</b> min: <b>-0.01</b> max: <b>0.346</b> variable: Sea level anomaly (sla) </li><li><b>adt_l4</b> date: <b>2025-07-30T00:00</b> min: <b>-0.359</b> max: <b>0.671</b> variable: Absolute dynamic topography (adt) </li><li><b>chl_l4</b> date: <b>2025-07-29T00:00</b> min: <b>0.052</b> max: <b>2.424</b> variable: Chlorophyll-a concentration - Mean of the binned pixels (CHL) </li></ul>
 
 <h3>Data sources 📋</h3>
 <ul>
