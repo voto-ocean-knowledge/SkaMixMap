@@ -32,6 +32,12 @@ def get_satellite_settings():
         'chl_l4': {
             'url': 'https://wmts.marine.copernicus.eu/teroWmts/OCEANCOLOUR_ATL_BGC_L4_NRT_009_116/cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D_202311',
             'var_name': 'CHL'},
+        'sst_forecast': {
+            'url': 'https://wmts.marine.copernicus.eu/teroWmts/BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411',
+            'var_name': 'thetao'},
+        'sss_forecast': {
+            'url': 'https://wmts.marine.copernicus.eu/teroWmts/BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411',
+            'var_name': 'so'},
     }
    # if 'analysed_sst' in ddict['ows:Identifier'] or 'sea_surface_temperature' in ddict['ows:Identifier']:
     for layer_name, sat_dict in satellite_dicts.items():
@@ -41,10 +47,19 @@ def get_satellite_settings():
             if sat_dict['var_name'] == cap_dict['ows:Identifier'].split('/')[-1]:
                 layer_dict = cap_dict
         sat_dict['title'] = layer_dict['ows:Title']
-        if "satellite_product_date" in user_dict.keys():
-             sat_dict["layer_datetime"] = user_dict["satellite_product_date"] + "T00:00:00.000Z"
+
+        if  type(layer_dict['Dimension']) is list:
+            dims_dict = layer_dict['Dimension'][0]
         else:
-            sat_dict["layer_datetime"] = layer_dict['Dimension']['Default']
+            dims_dict = layer_dict['Dimension']
+        datetime_valid_range = dims_dict['Value'].split('/')
+        layer_datetime = dims_dict['Default']
+        layer_datetime_key = "forecast_product_date" if "forecast" in layer_name else "satellite_product_date"
+        if layer_datetime_key in user_dict.keys():
+             selected_date = user_dict[layer_datetime_key] + "T00:00:00.000Z"
+             if datetime_valid_range[0] < selected_date < datetime_valid_range[1]:
+                 layer_datetime = selected_date
+        sat_dict["layer_datetime"] = layer_datetime
         sat_dict["min_val"] = float(layer_dict['ows:Metadata']['VariableInformation']['MinimumValue'])
         sat_dict["max_val"] = float(layer_dict['ows:Metadata']['VariableInformation']['MaximumValue'])
         sat_dict["units"] = layer_dict['ows:Metadata']['VariableInformation']['Unit']
@@ -103,23 +118,29 @@ def write_sat_to_html(ddict):
 def make_color_bars(ddict):
     fig, ax = plt.subplots()
     step = 0
+    i = 0
+    cbar_col = 0
     standard_cmaps = plt.colormaps()
     for key, layer_dict in ddict.items():
         if key == 'sst_l3':
             continue
-        label = f"{key} {layer_dict['title']} [{layer_dict['units']}]"
+        i += 1
+        label = r"$\bf{" + key.replace('_', '\_') + "}$" + f" {layer_dict['title']} [{layer_dict['units']}]"
         step += 1
         cmap = layer_dict['cmap']
         if cmap not in standard_cmaps:
             cmap = f"cmo.{cmap}"
         vmin = layer_dict['min_val']
         vmax = layer_dict['max_val']
-        if key[:3] in manual_limits.keys():
+        if key[:3] in manual_limits.keys() and 'forecast' not in key:
             vmin = manual_limits[key[:3]]['min']
             vmax = manual_limits[key[:3]]['max']
         x = np.linspace(vmin, vmax, 100)[np.newaxis, :]
         mappable = ax.imshow(x, aspect='auto', cmap=cmap)
-        cbar_ax = fig.add_axes([0.15, 0.25 - 0.18 * step, 1, 0.08])
+        if i == 4:
+            cbar_col = 1.2
+            step = 1
+        cbar_ax = fig.add_axes([0.15 + cbar_col, 0.25 - 0.18 * step, 1, 0.08])
         plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label=label)
     ax.remove()
     plt.savefig(root_dir / "static" / "colorbars.png", bbox_inches="tight", transparent=True)

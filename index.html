@@ -65,7 +65,7 @@
 // Template for CMEMS layers, adapted from https://gis.stackexchange.com/a/475424/
 // note how, among other things, we set the colormap and scale. This is important if overlaying multiple layers!
 
-var template =
+var template_sst =
   'https://wmts.marine.copernicus.eu/teroWmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={layer}&FORMAT=image/png&TILEMATRIXSET={tileMatrixSet}&TILEMATRIX={z}&time={time}&TILEROW={y}&TILECOL={x}&STYLE=cmap:thermal,range:' + sst_min + '/' + sst_max
 
 let standard = {};
@@ -73,36 +73,46 @@ standard['tileMatrixSet'] = "EPSG:3857";
 standard['noWrap'] = true;
 standard['attribution'] = '© <a href="https://help.marine.copernicus.eu/en/articles/4444611-how-to-cite-copernicus-marine-products-and-services">Copernicus CMEMS</a>';
 
-var sst_l4 = L.tileLayer(template, {
+var sst_l4 = L.tileLayer(template_sst, {
   layer: 'SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/DMI-BALTIC-SST-L4-NRT-OBS_FULL_TIME_SERIE/analysed_sst',
   time: sst_l4_time,
   ...standard
 }).addTo(map);
 //https://wmts.marine.copernicus.eu/teroWmts/SST_ATL_PHY_L3S_NRT_010_037/cmems_obs-sst_atl_phy_nrt_l3s_P1D-m_202211?request=GetCapabilities&service=WMS
-var sst_l3 = L.tileLayer(template, {
+var sst_l3 = L.tileLayer(template_sst, {
   layer: 'SST_ATL_PHY_L3S_NRT_010_037/cmems_obs-sst_atl_phy_nrt_l3s_P1D-m_202211/sea_surface_temperature',
   time: sst_l3_time,
   ...standard
 })
 
-var template_ssh =
+var template =
   'https://wmts.marine.copernicus.eu/teroWmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={layer}&FORMAT=image/png&TILEMATRIXSET={tileMatrixSet}&TILEMATRIX={z}&time={time}&TILEROW={y}&TILECOL={x}}'
 
 
-var ssh_l4 = L.tileLayer(template_ssh, {
+var ssh_l4 = L.tileLayer(template, {
   layer: 'SEALEVEL_EUR_PHY_L4_NRT_008_060/cmems_obs-sl_eur_phy-ssh_nrt_allsat-l4-duacs-0.0625deg_P1D_202506/sla',
   time: ssh_l4_time,
   ...standard
 })
 
-var adt_l4 = L.tileLayer(template_ssh, {
+var adt_l4 = L.tileLayer(template, {
   layer: 'SEALEVEL_EUR_PHY_L4_NRT_008_060/cmems_obs-sl_eur_phy-ssh_nrt_allsat-l4-duacs-0.0625deg_P1D_202506/adt',
   time: ssh_l4_time,
   ...standard
 })
-var chl_l4 = L.tileLayer(template_ssh, {
+var chl_l4 = L.tileLayer(template, {
   layer: 'OCEANCOLOUR_ATL_BGC_L4_NRT_009_116/cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D_202311/CHL',
   time: chl_l4_time,
+  ...standard
+})
+var sst_forecast = L.tileLayer(template, {
+  layer: 'BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411/thetao',
+  time: sst_forecast_time,
+  ...standard
+})
+var sss_forecast = L.tileLayer(template, {
+  layer: 'BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411/so',
+  time: sss_forecast_time,
   ...standard
 })
 // add location data from geojson
@@ -140,6 +150,8 @@ overlayMaps[ "SST L3 " + sst_l3_time.substr(0, 10)] = sst_l3;
 overlayMaps[ "SSH L4 " + ssh_l4_time.substr(0, 10)] = ssh_l4;
 overlayMaps[ "ADT L4 " + adt_l4_time.substr(0, 10)] = adt_l4;
 overlayMaps[ "CHL L4 " + chl_l4_time.substr(0, 10)] = chl_l4;
+overlayMaps[ "SST forecast " + sst_forecast_time.substr(0, 10)] = sst_forecast;
+overlayMaps[ "SSS forecast " + sss_forecast_time.substr(0, 10)] = sss_forecast;
 overlayMaps["Graticule"] = graticule;
 overlayMaps["Platforms"] = platforms;
 
@@ -159,7 +171,7 @@ L.control.ruler().addTo(map);
 	<br>
 	<img src="static/colorbars.png" class="img-fluid" alt="Colorbars of satellite products">
 
-<h3>satellite product times and data ranges 🛰️</h3><ul><li><b>sst_l4</b> date: <b>2025-07-30T00:00</b> min: <b>273.56</b> max: <b>285.1</b> variable: Analysed sea surface temperature (analysed_sst) </li><li><b>sst_l3</b> date: <b>2025-07-29T00:00</b> min: <b>279.68</b> max: <b>302.49</b> variable: Sea surface subskin temperature (sea_surface_temperature) </li><li><b>ssh_l4</b> date: <b>2025-07-30T00:00</b> min: <b>-0.01</b> max: <b>0.346</b> variable: Sea level anomaly (sla) </li><li><b>adt_l4</b> date: <b>2025-07-30T00:00</b> min: <b>-0.359</b> max: <b>0.671</b> variable: Absolute dynamic topography (adt) </li><li><b>chl_l4</b> date: <b>2025-07-29T00:00</b> min: <b>0.052</b> max: <b>2.424</b> variable: Chlorophyll-a concentration - Mean of the binned pixels (CHL) </li></ul>
+<h3>satellite product times and data ranges 🛰️</h3><ul><li><b>sst_l4</b> date: <b>2025-07-31T00:00</b> min: <b>273.56</b> max: <b>285.1</b> variable: Analysed sea surface temperature (analysed_sst) </li><li><b>sst_l3</b> date: <b>2025-07-30T00:00</b> min: <b>279.68</b> max: <b>302.49</b> variable: Sea surface subskin temperature (sea_surface_temperature) </li><li><b>ssh_l4</b> date: <b>2025-07-31T00:00</b> min: <b>-0.01</b> max: <b>0.346</b> variable: Sea level anomaly (sla) </li><li><b>adt_l4</b> date: <b>2025-07-31T00:00</b> min: <b>-0.359</b> max: <b>0.671</b> variable: Absolute dynamic topography (adt) </li><li><b>chl_l4</b> date: <b>2025-07-29T00:00</b> min: <b>0.052</b> max: <b>2.424</b> variable: Chlorophyll-a concentration - Mean of the binned pixels (CHL) </li><li><b>sst_forecast</b> date: <b>2025-08-03T00:00</b> min: <b>2.862</b> max: <b>10.161</b> variable: Potential temperature (thetao) </li><li><b>sss_forecast</b> date: <b>2025-08-03T00:00</b> min: <b>2.712</b> max: <b>35.001</b> variable: Salinity (so) </li></ul>
 
 <h3>Data sources 📋</h3>
 <ul>
