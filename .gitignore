@@ -209,3 +209,4 @@ __marimo__/
 data/raw_mail_data
 data/processed_location_data/
 .idea
+notebooks/*.nc

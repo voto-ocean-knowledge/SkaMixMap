@@ -26,7 +26,9 @@ pip install -r requirements.txt
 python src/update_map.py
 ```
 
+### static plots
 
+You can download the satellite data and make more tailored static plots using the Copernicus Marine Toolbox via the jupyter notebook in the `notebooks` directory. See the README there for more details.
 
 ### Envisaged dataflow
 
