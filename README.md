@@ -6,29 +6,46 @@ This repo hosts code for near real time visualisation of diverse surface and sub
 
 Check out the [startup TODO list](https://github.com/voto-ocean-knowledge/SkaMixMap/issues/1) for action items
 
-### Current status
+# Installation
+
+To run the maps locally
+
+1. Clone or download this repo
+2. Double-click on index.html to see it in your browser
+3. ... that's it!
+
+To make edits to the map:
+
+1. Install the requirements `pip install -r requirements.txt`
+2. Run the update script `python src/update_map.py`
+3. Refresh index.html to see the updated page
+
+Note that if you want drifter locations you'll need to set up a gmail address, see instructions further down in this README file
+
+### Customisation
+
+User controlled settings are in `src/user_variables.py` these can be used to control aspects of the map. Including:
+
+- `colorbar_limits` manually set colorbar limits for variables like SST, to get a more useful range for the specific region of interest. Defaults to the global range of the layer
+- `satellite_product_date` set the date of the L3 and L4 satellite products. If the date you set is outside the allowed range, it will be ignored
+- `forecast_product_date` set the date of the forecast layers (modelled SST and SSS). If the date you set is outside the allowed range, it will be ignored
+- `platform_time_filter` set a date range for the tracks of the various platforms that show on the map.
+
+After updating any of these settings, run `src/update_map.py` again
+
+# Static plots
+
+You can download the satellite data and make more tailored static plots using the Copernicus Marine Toolbox via the jupyter notebook in the `notebooks` directory. See [the README in that directory](https://github.com/voto-ocean-knowledge/SkaMixMap/blob/main/notebooks/README.md) for more details.
+
+# Current status
 
 - Demo leaflet map with CMEMS satellite layers (Dates of these layers are set at the last update to main)
 - Demo location data pulled from a glider
 - Demo location from old drifter unit read from email
 - Location data from R/V Heincke
 
-### Steps to run locally
 
-- Clone or download this repo
-- Double-click on index.html to see it in your browser
-- ... that's it!
-- If you want to remake/remix the input data, run the script [`src/update_map.py`](https://github.com/voto-ocean-knowledge/SkaMixMap/blob/main/src/update_map.py). Requirements are in requirements.txt. Note that if you want drifter locations you'll need to set up a gmail address, see instructions further down in this README file
 
-```bash
-
-pip install -r requirements.txt
-python src/update_map.py
-```
-
-### static plots
-
-You can download the satellite data and make more tailored static plots using the Copernicus Marine Toolbox via the jupyter notebook in the `notebooks` directory. See the README there for more details.
 
 ### Envisaged dataflow
 
