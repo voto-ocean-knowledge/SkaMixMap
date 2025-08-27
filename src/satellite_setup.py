@@ -5,7 +5,7 @@ import requests
 import xmltodict
 import matplotlib.pyplot as plt
 import numpy as np
-#import cmocean.cm as cmo
+import cmocean.cm as cmo
 _log = logging.getLogger(__name__)
 
 root_dir = Path(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -47,7 +47,6 @@ def get_satellite_settings():
             if sat_dict['var_name'] == cap_dict['ows:Identifier'].split('/')[-1]:
                 layer_dict = cap_dict
         sat_dict['title'] = layer_dict['ows:Title']
-        sat_dict['layer_dict'] = layer_dict
 
         if  type(layer_dict['Dimension']) is list:
             dims_dict = layer_dict['Dimension'][0]
@@ -72,6 +71,7 @@ def get_satellite_settings():
             elif layer_dict['Style'][0]['@isDefault'] == 'true':
                 sat_dict['cmap'] =  layer_dict['Style'][0]['ows:Identifier'].split(':')[-1]
         _log.info(f"satellite layer info {layer_name}: {sat_dict}")
+        sat_dict['layer_dict'] = layer_dict
     return satellite_dicts
 
 def write_satellite_settings(ddict):
@@ -128,7 +128,7 @@ def make_color_bars(ddict):
         if key == 'sst_l3':
             continue
         i += 1
-        label = "$\bf{" + key.replace('_', '\_') + "}$" + f" {layer_dict['title']} [{layer_dict['units']}]"
+        label = f"{key.replace('_', ' ')}: {layer_dict['title']} [{layer_dict['units']}]"
         step += 1
         cmap = layer_dict['cmap']
         if cmap not in standard_cmaps:
