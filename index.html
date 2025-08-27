@@ -83,7 +83,7 @@ var sst_l3 = L.tileLayer(template_sst, {
   layer: 'SST_ATL_PHY_L3S_NRT_010_037/cmems_obs-sst_atl_phy_nrt_l3s_P1D-m_202211/sea_surface_temperature',
   time: sst_l3_time,
   ...standard
-})
+}).addTo(map);
 
 var template =
   'https://wmts.marine.copernicus.eu/teroWmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={layer}&FORMAT=image/png&TILEMATRIXSET={tileMatrixSet}&TILEMATRIX={z}&time={time}&TILEROW={y}&TILECOL={x}}'
