@@ -105,7 +105,12 @@ var chl_l4 = L.tileLayer(template, {
   time: chl_l4_time,
   ...standard
 })
-var sst_forecast = L.tileLayer(template, {
+
+
+var template_sst_fore =
+  'https://wmts.marine.copernicus.eu/teroWmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={layer}&FORMAT=image/png&TILEMATRIXSET={tileMatrixSet}&TILEMATRIX={z}&time={time}&TILEROW={y}&TILECOL={x}&STYLE=cmap:thermal,range:' + sst_forecast_min + '/' + sst_forecast_max
+
+var sst_forecast = L.tileLayer(template_sst_fore, {
   layer: 'BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411/thetao',
   time: sst_forecast_time,
   ...standard
@@ -171,7 +176,7 @@ L.control.ruler().addTo(map);
 	<br>
 	<img src="static/colorbars.png" class="img-fluid" alt="Colorbars of satellite products">
 
-<h3>satellite product times and data ranges 🛰️</h3><ul><li><b>sst_l4</b> date: <b>2025-07-31T00:00</b> min: <b>273.56</b> max: <b>285.1</b> variable: Analysed sea surface temperature (analysed_sst) </li><li><b>sst_l3</b> date: <b>2025-07-30T00:00</b> min: <b>279.68</b> max: <b>302.49</b> variable: Sea surface subskin temperature (sea_surface_temperature) </li><li><b>ssh_l4</b> date: <b>2025-07-31T00:00</b> min: <b>-0.01</b> max: <b>0.346</b> variable: Sea level anomaly (sla) </li><li><b>adt_l4</b> date: <b>2025-07-31T00:00</b> min: <b>-0.359</b> max: <b>0.671</b> variable: Absolute dynamic topography (adt) </li><li><b>chl_l4</b> date: <b>2025-07-29T00:00</b> min: <b>0.052</b> max: <b>2.424</b> variable: Chlorophyll-a concentration - Mean of the binned pixels (CHL) </li><li><b>sst_forecast</b> date: <b>2025-08-03T00:00</b> min: <b>2.862</b> max: <b>10.161</b> variable: Potential temperature (thetao) </li><li><b>sss_forecast</b> date: <b>2025-08-03T00:00</b> min: <b>2.712</b> max: <b>35.001</b> variable: Salinity (so) </li></ul>
+<h3>satellite product times and data ranges 🛰️</h3><ul><li><a href=https://data.marine.copernicus.eu/product/SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/description><b>sst_l4</b></a> date: <b>2025-08-27T00:00</b> min: <b>273.56</b> max: <b>285.1</b> variable: Analysed sea surface temperature (analysed_sst) </li><li><a href=https://data.marine.copernicus.eu/product/SST_ATL_PHY_L3S_NRT_010_037/description><b>sst_l3</b></a> date: <b>2025-08-26T00:00</b> min: <b>279.68</b> max: <b>302.49</b> variable: Sea surface subskin temperature (sea_surface_temperature) </li><li><a href=https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_L4_NRT_008_060/description><b>ssh_l4</b></a> date: <b>2025-08-27T00:00</b> min: <b>-0.01</b> max: <b>0.346</b> variable: Sea level anomaly (sla) </li><li><a href=https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_L4_NRT_008_060/description><b>adt_l4</b></a> date: <b>2025-08-27T00:00</b> min: <b>-0.359</b> max: <b>0.671</b> variable: Absolute dynamic topography (adt) </li><li><a href=https://data.marine.copernicus.eu/product/OCEANCOLOUR_ATL_BGC_L4_NRT_009_116/description><b>chl_l4</b></a> date: <b>2025-08-25T00:00</b> min: <b>0.052</b> max: <b>2.424</b> variable: Chlorophyll-a concentration - Mean of the binned pixels (CHL) </li><li><a href=https://data.marine.copernicus.eu/product/BALTICSEA_ANALYSISFORECAST_PHY_003_006/description><b>sst_forecast</b></a> date: <b>2025-08-27T00:00</b> min: <b>2.862</b> max: <b>10.161</b> variable: Potential temperature (thetao) </li><li><a href=https://data.marine.copernicus.eu/product/BALTICSEA_ANALYSISFORECAST_PHY_003_006/description><b>sss_forecast</b></a> date: <b>2025-08-27T00:00</b> min: <b>2.712</b> max: <b>35.001</b> variable: Salinity (so) </li></ul>
 
 <h3>Data sources 📋</h3>
 <ul>

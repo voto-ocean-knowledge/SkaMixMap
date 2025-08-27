@@ -71,6 +71,11 @@ def get_satellite_settings():
             elif layer_dict['Style'][0]['@isDefault'] == 'true':
                 sat_dict['cmap'] =  layer_dict['Style'][0]['ows:Identifier'].split(':')[-1]
         _log.info(f"satellite layer info {layer_name}: {sat_dict}")
+        parts = sat_dict['url'].split('/')
+        parts[2] = parts[2].replace('wmts', 'data')
+        parts[3] = 'product'
+        parts[-1] = 'description'
+        sat_dict['product_url'] = '/'.join(parts)
         sat_dict['layer_dict'] = layer_dict
     return satellite_dicts
 
@@ -107,7 +112,7 @@ def write_sat_to_html(ddict):
     new_info = "<h3>satellite product times and data ranges 🛰️</h3><ul>"
     for key, var in ddict.items():
         dt = var['layer_datetime'][:16]
-        newstr = f"<li><b>{key}</b> date: <b>{dt}</b> min: <b>{round(var['min_val'], 3)}</b> max: <b>{round(var['max_val'], 3)}</b> variable: {var['title']} </li>"
+        newstr = f"<li><a href={var['product_url']}><b>{key}</b></a> date: <b>{dt}</b> min: <b>{round(var['min_val'], 3)}</b> max: <b>{round(var['max_val'], 3)}</b> variable: {var['title']} </li>"
         new_info += newstr
     new_info+='</ul>\n'
     for i, item in enumerate(contents):
@@ -135,9 +140,14 @@ def make_color_bars(ddict):
             cmap = f"cmo.{cmap}"
         vmin = layer_dict['min_val']
         vmax = layer_dict['max_val']
-        if key[:3] in manual_limits.keys() and 'forecast' not in key:
-            vmin = manual_limits[key[:3]]['min']
-            vmax = manual_limits[key[:3]]['max']
+        if key[:3] in manual_limits.keys():
+            if 'forecast' not in key:
+                key = key[:3]
+            vmin = manual_limits[key]['min']
+            vmax = manual_limits[key]['max']
+        if 'sst' in key and vmin>250: #fix for kelvin
+            vmin -= 273.15
+            vmax -= 273.15
         x = np.linspace(vmin, vmax, 100)[np.newaxis, :]
         mappable = ax.imshow(x, aspect='auto', cmap=cmap)
         if i == 4:
@@ -153,7 +163,6 @@ def main():
     sat_dicts = get_satellite_settings()
     write_satellite_settings(sat_dicts)
     write_sat_to_html(sat_dicts)
-    make_color_bars(sat_dicts)
     make_color_bars(sat_dicts)
     write_graticule_settings()
 
