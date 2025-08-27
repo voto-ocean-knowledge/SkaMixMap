@@ -5,6 +5,7 @@ import requests
 import xmltodict
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import cmocean.cm as cmo
 _log = logging.getLogger(__name__)
 
@@ -83,6 +84,12 @@ def write_satellite_settings(ddict):
     with open(satellite_settings, "w") as fout:
         for key, var in ddict.items():
             fout.write(f"var {key}_time = '{var['layer_datetime']}';\n")
+            if 'forecast' in key:
+                # Add the next 3 days of forecast as additional layers
+                ts = pd.to_datetime(var['layer_datetime'])
+                out_times = [str(ts + pd.Timedelta(i, "d"))[:10] + "T00:00:00.000Z" for i in range(4)]
+                fout.write(f"var {key}_times = {out_times};\n")
+
         for var_name, limits_dict in manual_limits.items():
             for key, var in limits_dict.items():
                 fout.write(f"{var_name}_{key} = {var};\n")
