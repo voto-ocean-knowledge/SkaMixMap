@@ -168,7 +168,6 @@ def make_color_bars(ddict):
 def main():
     sat_dicts = get_satellite_settings()
     write_satellite_settings(sat_dicts)
-    write_sat_to_html(sat_dicts)
     make_color_bars(sat_dicts)
     write_graticule_settings()
 
