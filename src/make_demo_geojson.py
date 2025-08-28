@@ -1,3 +1,4 @@
+import datetime
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -11,18 +12,21 @@ sys.path.insert(0, folder)
 from user_variables import user_dict
 data_dir = Path(folder) / 'data'
 loc_dir = data_dir / "processed_location_data"
+json_dir = Path(folder)  / "static" / "json"
+if not json_dir.exists():
+    json_dir.mkdir(parents=True)
 
 features_list = []
 
-def write_geojson(features):
+def write_geojson(features, filename, var_name = "platform_locations"):
     # Write out geojson to file with the syntax to make it importable in javascript. Ugly but functional
-    file_out = f"{folder}/data/demo/sample-geojson.js"
+    file_out = json_dir / filename
     geojson_dict =  {
         "type": "FeatureCollection",
         "features": features
     }
     with open(file_out, "w") as fout:
-        fout.write("var platform_locations =")
+        fout.write(f"var {var_name} =")
         json.dump(geojson_dict, fout)
         fout.write(';')
 
@@ -75,16 +79,23 @@ class CreateGeojson:
     def __init__(self):
         self.user_dict = user_dict
         self.json_features_list = []
+        self.outfile = "all_platform_locations.js"
+        self.filter_json = False
 
     def process_json(self):
         for csv in loc_dir.glob("*.csv"):
             fn = csv.name
             df = pd.read_csv(csv, parse_dates=['datetime'])
 
-            if 'platforms_time_filter' in user_dict.keys():
-                start = user_dict["platforms_time_filter"]['start']
-                end = user_dict["platforms_time_filter"]['end']
+            if self.filter_json:
+                if 'platforms_time_filter' in user_dict.keys():
+                    start = user_dict["platforms_time_filter"]['start']
+                    end = user_dict["platforms_time_filter"]['end']
+                else:
+                    end = str(datetime.datetime.now())
+                    start = str(datetime.datetime.now() - datetime.timedelta(days=3))
                 df = time_filter(df, start, end)
+                self.outfile = "platform_locations.js"
             if df.empty:
                 continue
 
@@ -114,11 +125,15 @@ class CreateGeojson:
             self.json_features_list.append(point_dict)
 
     def write_json(self):
-        write_geojson(self.json_features_list)
-        
+        write_geojson(self.json_features_list, self.outfile, var_name = self.outfile.split('.')[0])
+
 
 def main():
     json_maker = CreateGeojson()
+    json_maker.process_json()
+    json_maker.write_json()
+    json_maker = CreateGeojson()
+    json_maker.filter_json = True
     json_maker.process_json()
     json_maker.write_json()
 

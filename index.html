@@ -28,7 +28,8 @@
     src="https://cdn.jsdelivr.net/gh/gokertanrisever/leaflet-ruler@master/src/leaflet-ruler.js"
     integrity="sha384-8SqKZR7V8uOetpjjbcNJHvwuHpb074WS0UXjCLhzfJUqYn3B/uWx1WVv5mwRp1mV"
     crossorigin="anonymous"></script>
-	<script src="data/demo/sample-geojson.js" type="text/javascript"></script>
+	<script src="static/json/platform_locations.js" type="text/javascript"></script>
+	<script src="static/json/all_platform_locations.js" type="text/javascript"></script>
 	<script src="static/satellite.js" type="text/javascript"></script>
 	<script src="static/Leaflet.Graticule.js" type="text/javascript"></script>
 	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
@@ -132,6 +133,12 @@ let platforms = L.geoJSON(platform_locations, {
 		},
 		onEachFeature: popupText}).addTo(map);
 
+let platforms_full = L.geoJSON(all_platform_locations, {
+		style(feature) {
+			return feature.properties && feature.properties.style;
+		},
+		onEachFeature: popupText})
+
 // High lat graticule with finer graduations in lat
 let graticule = L.latlngGraticule({
 	showLabel: true,
@@ -179,6 +186,7 @@ for (let i = 0; i < lenSal; i++) {
 
 overlayMaps["Graticule"] = graticule;
 overlayMaps["Platforms"] = platforms;
+overlayMaps["Platforms (full tracks)"] = platforms_full;
 
 var controlPanel = L.control.layers(baseMaps, overlayMaps).addTo(map);
 map.addControl(new L.Control.ScaleNautic({
