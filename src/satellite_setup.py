@@ -146,7 +146,7 @@ def make_color_bars(ddict):
             cmap = f"cmo.{cmap}"
         vmin = layer_dict['min_val']
         vmax = layer_dict['max_val']
-        if key[:3] in manual_limits.keys():
+        if key[:3] in manual_limits.keys() or key in manual_limits.keys():
             if 'forecast' not in key:
                 key = key[:3]
             vmin = manual_limits[key]['min']

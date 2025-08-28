@@ -118,8 +118,6 @@ var chl_l4 = L.tileLayer(template, {
 })
 
 
-var template_sst_fore =
-  'https://wmts.marine.copernicus.eu/teroWmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={layer}&FORMAT=image/png&TILEMATRIXSET={tileMatrixSet}&TILEMATRIX={z}&time={time}&TILEROW={y}&TILECOL={x}&STYLE=cmap:thermal,range:' + sst_forecast_min + '/' + sst_forecast_max
 
 // add location data from geojson
 
@@ -157,6 +155,7 @@ overlayMaps[ "SSH L4 " + ssh_l4_time.substr(0, 10)] = ssh_l4;
 overlayMaps[ "ADT L4 " + adt_l4_time.substr(0, 10)] = adt_l4;
 overlayMaps[ "CHL L4 " + chl_l4_time.substr(0, 10)] = chl_l4;
 
+var template_sst_fore = template + '&STYLE=cmap:thermal,range:' + sst_forecast_min + '/' + sst_forecast_max
 let len = sst_forecast_times.length;
 for (let i = 0; i < len; i++) {
 	thisTime = sst_forecast_times[i]
@@ -167,10 +166,11 @@ for (let i = 0; i < len; i++) {
 	});
 }
 
+var template_sss_fore = template + '&STYLE=cmap:haline,range:' + sss_forecast_min + '/' + sss_forecast_max
 let lenSal = sss_forecast_times.length;
 for (let i = 0; i < lenSal; i++) {
 	thisTime = sss_forecast_times[i]
-	overlayMaps[ "SSS forecast " + thisTime.substr(0, 10)] =  L.tileLayer(template, {
+	overlayMaps[ "SSS forecast " + thisTime.substr(0, 10)] =  L.tileLayer(template_sss_fore, {
 	  layer: 'BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411/so',
 	  time: thisTime,
 	  ...standard
