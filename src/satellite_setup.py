@@ -116,14 +116,13 @@ def write_graticule_settings():
 def write_sat_to_html(ddict):
     with open(satellite_html, "r") as f:
         contents = f.readlines()
-    new_info = "<h3>satellite product times and data ranges 🛰️</h3><ul>"
+    new_info = "<h3>satellite product info 🛰️</h3><ul>"
     for key, var in ddict.items():
-        dt = var['layer_datetime'][:16]
-        newstr = f"<li><a href={var['product_url']}><b>{key}</b></a> date: <b>{dt}</b> min: <b>{round(var['min_val'], 3)}</b> max: <b>{round(var['max_val'], 3)}</b> variable: {var['title']} </li>"
+        newstr = f"<li><a href={var['product_url']}><b>{key}</b></a> variable: {var['title']} </li>"
         new_info += newstr
     new_info+='</ul>\n'
     for i, item in enumerate(contents):
-        if "satellite product times" in item:
+        if "satellite product info" in item:
             contents[i] = new_info
 
     with open(satellite_html, "w") as f:
