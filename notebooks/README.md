@@ -6,17 +6,17 @@ Follow the official installation guide:
 ## 1. Environment Setup
 - Create a new conda/mamba environment using the provided `env.yml` file  
   **or**  
-- Install the `copernicusmarine` package into your existing environment (e.g. "pip install copernicusmarine", "conda install -c conda-forge copernicusmarine" ).
-    - Sometimes it installs an older version, to test run "pip show copernicusmarine", it should be version: 2.2.2 (written on August 28th, 2025).
+- Install the `copernicusmarine` package into your existing environment (e.g. `pip install copernicusmarine`, `conda install -c conda-forge copernicusmarine` ).
+    - Sometimes it installs an older version, to test run `pip show copernicusmarine`, it should be version: 2.2.2 (written on August 28th, 2025).
     - If so, run pip/conda update copernicusmarine.
 
 ## 2. Login
 Open a terminal inside the environment where the package is installed and run:
 
-copernicusmarine login
+`copernicusmarine login`
 
 You will be prompted for your credentials:
 
-Copernicus Marine username:
+`Copernicus Marine username`:
 
 ## 3. run the notebook satellite_static_plots.py to generate static plots of the most recent satellite data
