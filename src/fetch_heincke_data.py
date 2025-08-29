@@ -20,7 +20,7 @@ heincke_proc_csv = processed_location_data / "heincke.csv"
 def heincke_download_data():
     begin_date = (datetime.datetime.now() - datetime.timedelta(hours=24)).isoformat()[:19]
     end_date = (datetime.datetime.now() + datetime.timedelta(hours=2)).isoformat()[:19]
-    url = f"https://dashboard.awi.de/data-xxl/rest/data?beginDate={begin_date}&endDate={end_date}&aggregate=minute&aggregateFunctions=MEAN&sensors=vessel:heincke:trimble:longitude&sensors=vessel:heincke:trimble:latitude&sensors=vessel:heincke:saab:longitude&sensors=vessel:heincke:saab:latitude&sensors=vessel:heincke:phins:longitude&sensors=vessel:heincke:saab:latitude"
+    url = f"https://dashboard.awi.de/data-xxl/rest/data?beginDate={begin_date}&endDate={end_date}&aggregate=minute&aggregateFunctions=MEAN&sensors=vessel:heincke:trimble:longitude&sensors=vessel:heincke:trimble:latitude&sensors=vessel:heincke:saab:longitude&sensors=vessel:heincke:tsg:sbe38:temperature&sensors=vessel:heincke:tsg:salinity"
     req = requests.get(url)
     with open(heincke_raw_csv, "w") as fout:
         fout.write(req.text)
@@ -58,6 +58,23 @@ def combine_heincke_data():
     df_full = pd.concat([df_full, df])
     df_full = clean_locations(df_full)
     df_full.to_csv(heincke_proc_csv, index=False)
+
+def heincke_download_underway_data(start=datetime.datetime.now() - datetime.timedelta(hours=24), end=datetime.datetime.now() + datetime.timedelta(hours=2)):
+    raw_csv = "heincke_raw_data.csv"
+    begin_date = start.isoformat()[:19]
+    end_date = end.isoformat()[:19]
+    url = f"https://dashboard.awi.de/data-xxl/rest/data?beginDate={begin_date}&endDate={end_date}&aggregate=minute&aggregateFunctions=MEAN&sensors=vessel:heincke:trimble:longitude&sensors=vessel:heincke:trimble:latitude&sensors=vessel:heincke:tsg:sbe38:temperature&sensors=vessel:heincke:tsg:salinity"
+    req = requests.get(url)
+    with open(raw_csv, "w") as fout:
+        fout.write(req.text)
+    df = pd.read_csv(raw_csv, sep='\t', parse_dates=['datetime'])
+
+    df = df.rename({'vessel:heincke:trimble:longitude (mean) []': 'lon',
+                    'vessel:heincke:trimble:latitude (mean) []': 'lat', 
+                    'vessel:heincke:tsg:salinity (mean) [0/00]': 'salinity [PSU]',
+                    'vessel:heincke:tsg:sbe38:temperature (mean) [°C]': 'temperature [°C]',
+                    }, axis=1)
+    return df
 
 
 def main():
