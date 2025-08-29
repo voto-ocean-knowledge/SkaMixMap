@@ -103,18 +103,27 @@ class CreateGeojson:
                 "weight": 4,
                 "opacity": 0.8,
             }
+            timestamp = str(df['datetime'].values[-1])[:19]
             if "heincke" in fn:
                 line_popup =  f'<a href="https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html">R/V Heincke</a>'
-                point_popup = f'<a href="https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html">R/V Heincke</a><br>location at <br>{str(df["datetime"].values[-1])[:19]}'
+                point_popup = f'<a href="https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html">R/V Heincke</a><br>location at <br>{timestamp}'
                 line_style["color"] = "white"
-            elif "glider" in fn:
-                line_popup = f"glider track <br> <a href='https://observations.voiceoftheocean.org/SEA078/M29'>SEA078 M29</a>"
-                point_popup = f"<a href='https://observations.voiceoftheocean.org/SEA078/M29'>SEA078 M29</a><br>location at <br>{df['datetime'].values[-1]}"
+            elif "SEA" in fn:
+                glidermission = fn.split('.')[0]
+                __, platform_id, mission_id = glidermission.split('_')
+                line_popup = f"glider track <br> <a href='https://observations.voiceoftheocean.org/{platform_id}/{mission_id}'>{platform_id} {mission_id}</a>"
+                point_popup = f"<a href='https://observations.voiceoftheocean.org/{platform_id}/{mission_id}'>{platform_id} {mission_id}</a><br>location at <br>{timestamp}"
                 line_style["color"] = "#fffb08"
+            elif "SB" in fn:
+                glidermission = fn.split('.')[0]
+                platform_id, mission_id, __ = glidermission.split('_')
+                line_popup = f"glider track <br> <a href='https://observations.voiceoftheocean.org/{platform_id}/{mission_id}'>{platform_id} {mission_id}</a>"
+                point_popup = f"<a href='https://observations.voiceoftheocean.org/{platform_id}/{mission_id}'>{platform_id} {mission_id}</a><br>location at <br>{timestamp}"
+                line_style["color"] = "orange"
             elif "unit_" in fn:
                 unit_id = fn.split('_')[1][:-4]
                 line_popup = f"unit {unit_id}"
-                point_popup =  f"unit {unit_id}<br>location at <br>{str(df['datetime'].values[-1])[:19]}"
+                point_popup =  f"unit {unit_id}<br>location at <br>{timestamp}"
             else:
                 _log.warning(f"unkown data source {csv}. Skipping")
                 continue
