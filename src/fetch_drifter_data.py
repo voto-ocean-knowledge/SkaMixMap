@@ -54,17 +54,23 @@ def extract_loc_from_sbd(fn):
     unit_id, message_id = filename.split('_')
     unit_id = int(unit_id)
     message_id = int(message_id)
-    with open(fn) as file_in:
-        line = file_in.read()
+    try:
+        with open(fn) as file_in:
+            line = file_in.read()
+    except UnicodeDecodeError:
+        _log.error(f"failed to read {fn}. Skipping")
+        return
 
-    date_str, p, lat_lon_str = line.split(',')
-    lat_lon_parts = lat_lon_str.split(' ')
-    lat = float(lat_lon_parts[1])
-    lon = float(lat_lon_parts[2])
-    year = datetime.datetime.now().year
-    # todo fix for demo data: setting this for 2024 for now (old messages)
-    year = 2024
-    dt = datetime.datetime(year, int(date_str[:2]), int(date_str[2:4]), int(date_str[4:6]), int(date_str[6:8]))
+    try:
+        date_str, p, lat_lon_str = line.split(',')
+        lat_lon_parts = lat_lon_str.split(' ')
+        lat = float(lat_lon_parts[1])
+        lon = float(lat_lon_parts[2])
+        year = datetime.datetime.now().year
+        dt = datetime.datetime(year, int(date_str[:2]), int(date_str[2:4]), int(date_str[4:6]), int(date_str[6:8]))
+    except:
+        _log.error(f"failed to parse {fn} contents: {line}. Skipping")
+        return
 
     ddict = {
         "unit_id": unit_id,
