@@ -1,9 +1,12 @@
+def degrees_to_Kelvin(celsius):
+    return celsius + 273.15
+
 user_dict = {
     "colorbar_limits" : {
-        "sst": {'min': 288,
-                'max': 294},
-        "sst_forecast": {'min': 12,
-                'max': 23},
+        "sst": {'min': degrees_to_Kelvin(13),
+                'max': degrees_to_Kelvin(22)},
+        "sst_forecast": {'min': 13,
+                'max': 22},
         "sss_forecast": {'min': 15,
                          'max': 35},
     },
