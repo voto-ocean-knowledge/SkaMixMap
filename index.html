@@ -184,6 +184,18 @@ for (let i = 0; i < lenSal; i++) {
 	});
 }
 
+var template_cdo_fore = template + '&STYLE=range:' + cdo_forecast_min + '/' + cdo_forecast_max
+let lenCdo = cdo_forecast_times.length;
+for (let i = 0; i < lenSal; i++) {
+	thisTime = cdo_forecast_times[i]
+	overlayMaps[ "CDOM forecast " + thisTime.substr(0, 10)] =  L.tileLayer(template_cdo_fore, {
+	  layer: 'BALTICSEA_ANALYSISFORECAST_BGC_003_007/cmems_mod_bal_bgc_anfc_P1D-m_202411/cdom',
+	  time: thisTime,
+	  ...standard
+	});
+}
+
+
 overlayMaps["Graticule"] = graticule;
 overlayMaps["Platforms"] = platforms;
 overlayMaps["Platforms (full tracks)"] = platforms_full;
@@ -196,6 +208,25 @@ map.addControl(new L.Control.ScaleNautic({
 		nautic: true
 	}));
 L.control.ruler().addTo(map);
+
+var lat, lng;
+
+map.addEventListener('mousemove', function(ev) {
+   lat = ev.latlng.lat;
+   lng = ev.latlng.lng;
+});
+
+document.getElementById("transitmap").addEventListener("contextmenu", function (event) {
+    // Prevent the browser's context menu from appearing
+    event.preventDefault();
+
+    // Add marker
+    // L.marker([lat, lng], ....).addTo(map);
+    alert(lat + ' - ' + lng);
+
+    return false; // To disable default popup.
+});
+
 </script>
 
 </div>

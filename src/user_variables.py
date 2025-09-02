@@ -9,6 +9,8 @@ user_dict = {
                 'max': 22},
         "sss_forecast": {'min': 15,
                          'max': 35},
+        "cdo_forecast": {'min': 0,
+                         'max': 10},
     },
    # "forecast_product_date": "2025-08-03",
    # "satellite_product_date": "2025-07-29"
