@@ -39,6 +39,9 @@ def get_satellite_settings():
         'sss_forecast': {
             'url': 'https://wmts.marine.copernicus.eu/teroWmts/BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411',
             'var_name': 'so'},
+        'cdo_forecast': {
+            'url': 'https://wmts.marine.copernicus.eu/teroWmts/BALTICSEA_ANALYSISFORECAST_BGC_003_007/cmems_mod_bal_bgc_anfc_P1D-m_202411',
+            'var_name': 'cdom'},
     }
    # if 'analysed_sst' in ddict['ows:Identifier'] or 'sea_surface_temperature' in ddict['ows:Identifier']:
     for layer_name, sat_dict in satellite_dicts.items():
