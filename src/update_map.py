@@ -23,10 +23,14 @@ def main():
     start = datetime.datetime.now()
     _log.info("START")
     fetch_drifter_data.main()
-    fetch_heincke_data.main()
+    try:
+        fetch_heincke_data.main()
+    except Exception as e:
+        _log.error(f"Error occurred in Heincke data fetch: {e}")
     fetch_voto_data.main()
     make_demo_geojson.main()
     satellite_setup.main()
+
     end = datetime.datetime.now()
     _log.info(f"END elapsed time: {round((end - start).total_seconds(), 1)} seconds")
 
