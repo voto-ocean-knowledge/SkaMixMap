@@ -52,7 +52,8 @@
 		<h1> SkaMix operational map</h1>
 
 		<h3>Work in progress!</h3>
-		<p>This map will display the near real time locations of vessels and autonomous platforms during the SkaMix project.</p><p> For now, it has some old autonomous platform data and near real time satellite layers from CMEMS.</p>
+		<p>This map will display the near real time locations of vessels and autonomous platforms during the SkaMix project. For now, it has some old autonomous platform data and near real time satellite layers from CMEMS.</p>
+		<p>👋 <b>Instructions:</b> click on the map for a lon-lat popup. Use the layers icon in the top right to select satellite imagery etc. Use the compass icon to measure distances and bearings</p>
 	</div>
 		<div class="col-md-2">
 		</div>
@@ -209,23 +210,14 @@ map.addControl(new L.Control.ScaleNautic({
 	}));
 L.control.ruler().addTo(map);
 
-var lat, lng;
-
-map.addEventListener('mousemove', function(ev) {
-   lat = ev.latlng.lat;
-   lng = ev.latlng.lng;
-});
-
-document.getElementById("transitmap").addEventListener("contextmenu", function (event) {
-    // Prevent the browser's context menu from appearing
-    event.preventDefault();
-
-    // Add marker
-    // L.marker([lat, lng], ....).addTo(map);
-    alert(lat + ' - ' + lng);
-
-    return false; // To disable default popup.
-});
+	const popup = L.popup()
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent(`${e.latlng.toString()}`.substr(6, 100))
+			.openOn(map);
+	}
+	map.on('click', onMapClick);
 
 </script>
 
