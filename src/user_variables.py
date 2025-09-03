@@ -7,6 +7,8 @@ user_dict = {
                 'max': degrees_to_Kelvin(22)},
         "sst_forecast": {'min': 13,
                 'max': 22},
+        "sst_forecast_baltic": {'min': 13,
+                'max': 22},
         "sss_forecast": {'min': 15,
                          'max': 35},
         "cdo_forecast": {'min': 0,
