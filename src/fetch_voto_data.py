@@ -16,6 +16,7 @@ def download_glider_data(dataset_id = "nrt_SEA078_M29"):
     glider_csv = processed_location_data / (dataset_id + ".csv")
     df.to_csv(glider_csv, index=False)
     
+    
 def glider_download_nrt_data(dataset_id="nrt_SEA078_M29"):
     df = pd.read_csv(
         f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?latitude%2Clongitude%2Ctime%2Cdepth%2Ctemperature%2Csalinity")
@@ -24,6 +25,9 @@ def glider_download_nrt_data(dataset_id="nrt_SEA078_M29"):
                     'time (UTC)': 'datetime'}, axis=1)
     df['datetime'] = pd.to_datetime(df.datetime)
     return df
+
+
+    
 
 
 def download_sailbuoy_data(dataset_id = "SB2120_M3_delayed"):
@@ -49,6 +53,7 @@ def sailbuoy_download_nrt_data(dataset_id="SB2120_M3_delayed"):
 def main():
     download_sailbuoy_data()
     download_glider_data()
+    download_glider_data(dataset_id= "nrt_SEA069_M52") # for the already deployed Skagerak glider
 
 if __name__ == '__main__':
     main()
