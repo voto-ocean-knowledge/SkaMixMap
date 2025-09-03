@@ -20,7 +20,7 @@ satellite_html = root_dir / "index.html"
 def get_satellite_settings():
     satellite_dicts = {'sst_l4': {
         'url': 'https://wmts.marine.copernicus.eu/teroWmts/SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/DMI-BALTIC-SST-L4-NRT-OBS_FULL_TIME_SERIE',
-        'var_name': 'analysed_sst'},
+        'var_name': 'analysed_sst'},            
         'sst_l3': {
         'url': 'https://wmts.marine.copernicus.eu/teroWmts/SST_ATL_PHY_L3S_NRT_010_037/cmems_obs-sst_atl_phy_nrt_l3s_P1D-m_202211',
         'var_name': 'sea_surface_temperature'},
@@ -33,8 +33,11 @@ def get_satellite_settings():
         'chl_l4': {
             'url': 'https://wmts.marine.copernicus.eu/teroWmts/OCEANCOLOUR_ATL_BGC_L4_NRT_009_116/cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D_202311',
             'var_name': 'CHL'},
-        'sst_forecast': {
+        'sst_forecast_baltic': {
             'url': 'https://wmts.marine.copernicus.eu/teroWmts/BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411',
+            'var_name': 'thetao'},
+        'sst_forecast': {
+            'url': 'https://wmts.marine.copernicus.eu/teroWmts/NWSHELF_ANALYSISFORECAST_PHY_004_013/cmems_mod_nws_phy_anfc_0.027deg-2D_PT1H-m_202411',
             'var_name': 'thetao'},
         'sss_forecast': {
             'url': 'https://wmts.marine.copernicus.eu/teroWmts/BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411',

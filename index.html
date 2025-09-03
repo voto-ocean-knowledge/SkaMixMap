@@ -167,7 +167,18 @@ var template_sst_fore = template + '&STYLE=cmap:thermal,range:' + sst_forecast_m
 let len = sst_forecast_times.length;
 for (let i = 0; i < len; i++) {
 	thisTime = sst_forecast_times[i]
-	overlayMaps[ "SST forecast " + thisTime.substr(0, 10)] =  L.tileLayer(template_sst_fore, {
+	overlayMaps[ "SST North Sea forecast " + thisTime.substr(0, 10)] =  L.tileLayer(template_sst_fore, {
+	  layer: 'NWSHELF_ANALYSISFORECAST_PHY_004_013/cmems_mod_nws_phy_anfc_0.027deg-2D_PT1H-m_202411/thetao',
+	  time: thisTime,
+	  ...standard
+	});
+}
+
+var template_sst_fore = template + '&STYLE=cmap:thermal,range:' + sst_forecast_min + '/' + sst_forecast_max
+let lenBaltic = sst_forecast_times.length;
+for (let i = 0; i < lenBaltic; i++) {
+	thisTime = sst_forecast_times[i]
+	overlayMaps[ "SST Baltic forecast " + thisTime.substr(0, 10)] =  L.tileLayer(template_sst_fore, {
 	  layer: 'BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411/thetao',
 	  time: thisTime,
 	  ...standard
