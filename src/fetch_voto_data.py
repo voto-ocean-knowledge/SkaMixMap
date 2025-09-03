@@ -6,10 +6,11 @@ root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 processed_location_data = Path(root_dir) / "data" / "processed_location_data"
 def download_glider_data(dataset_id = "nrt_SEA078_M29"):
-    # Download sample glider data locations from VOTO ERDDAP
+    # Download glider data locations from VOTO ERDDAP
     df = pd.read_csv(
-        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?latitude%2Clongitude%2Ctime")
-    df = df[::100]
+        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?latitude%2Clongitude%2Ctime%2Cprofile_num",
+        parse_dates=['time (UTC)'])
+    df = df.groupby('profile_num (1)').median()
     df = df.rename({'longitude (degrees_east)': 'lon',
                     'latitude (degrees_north)': 'lat',
                     'time (UTC)': 'datetime'}, axis=1)
