@@ -49,13 +49,13 @@ You can download the satellite data and make more tailored static plots using th
 
 ### Envisaged dataflow
 
-1. nrt locations from drifters, autonomous platforms and vessels are emailed to votodatain@gmail.com in a variety of formats
+1. [X] nrt locations from drifters, autonomous platforms and vessels are emailed to votodatain@gmail.com in a variety of formats
 2. Every hour, a python script running as a cronjob checks the inbox for new emails
 3. [X] The python script reads the email and converts the locations to geojson
 4. [X] geojson locations and tracks are displayed on a leaflet map
 5. [X] The leaflet map uses wmts web tiles to display multiple layers: bathy, SST, SSH etc.
-6. Additional static plots are made with more detailed and scaled SST raster data from satellite/reanalysis products
-7. SST from platforms is overlain on these plots where available
+6. [X] Additional static plots are made with more detailed and scaled SST raster data from satellite/reanalysis products
+7. [X] SST from platforms is overlain on these plots where available
 
 
 # Data sources
