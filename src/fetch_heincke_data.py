@@ -16,7 +16,6 @@ if not rough_data.exists():
 heincke_raw_csv = rough_data / "heincke_raw.csv"
 processed_location_data = Path(root_dir) / "data" / "processed_location_data"
 heincke_proc_csv = processed_location_data / "heincke.csv"
-heincke_df_csv = processed_location_data / "heincke_df.csv"
 
 def heincke_download_data():
     begin_date = (datetime.datetime.now() - datetime.timedelta(hours=24)).isoformat()[:19]
