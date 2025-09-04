@@ -162,7 +162,7 @@ def make_color_bars(ddict):
             vmax -= 273.15
         x = np.linspace(vmin, vmax, 100)[np.newaxis, :]
         mappable = ax.imshow(x, aspect='auto', cmap=cmap)
-        if i == 4:
+        if i == 5:
             cbar_col = 1.2
             step = 1
         cbar_ax = fig.add_axes([0.15 + cbar_col, 0.25 - 0.18 * step, 1, 0.08])
@@ -174,6 +174,7 @@ def make_color_bars(ddict):
 def main():
     sat_dicts = get_satellite_settings()
     write_satellite_settings(sat_dicts)
+    #write_sat_to_html(sat_dicts)
     make_color_bars(sat_dicts)
     write_graticule_settings()
 
