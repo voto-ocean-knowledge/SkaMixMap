@@ -3,12 +3,12 @@ def degrees_to_Kelvin(celsius):
 
 user_dict = {
     "colorbar_limits" : {
-        "sst": {'min': degrees_to_Kelvin(13),
-                'max': degrees_to_Kelvin(22)},
-        "sst_forecast": {'min': 13,
-                'max': 22},
-        "sst_forecast_baltic": {'min': 13,
-                'max': 22},
+        "sst": {'min': degrees_to_Kelvin(15),
+                'max': degrees_to_Kelvin(19)},
+        "sst_forecast": {'min': 15,
+                'max': 19},
+        "sst_forecast_baltic": {'min': 15,
+                'max': 19},
         "sss_forecast": {'min': 15,
                          'max': 35},
         "cdo_forecast": {'min': 0,
