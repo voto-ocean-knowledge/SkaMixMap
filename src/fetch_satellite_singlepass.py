@@ -1,5 +1,3 @@
-import datetime
-import pandas as pd
 import imaplib
 import json
 import os
@@ -40,15 +38,15 @@ def fetch_metop_sst_attachments():
         return
 
     mail.select("inbox")
-    result, data = mail.search(None, '(FROM "teradm@linfernp31.srx.bsh.de" SUBJECT "MetOp SST")')
+    result, data = mail.search(None, '(OR SUBJECT "MetOp SST" SUBJECT "Fwd: MetOp SST")')
     mail_ids = data[0]
     id_list = mail_ids.split()
     if not id_list:
         _log.warning("No matching emails found. Skipping")
         return
 
-    # check latest 500 emails 
-    for i in id_list[-500:]:
+    # check latest 10 emails
+    for i in id_list[-15:]:
         msg = None
         result, data = mail.fetch(i, "(RFC822)")
         for response_part in data:
@@ -69,28 +67,18 @@ def fetch_metop_sst_attachments():
                 # only the base name
                 filename = os.path.basename(filename)
                 ext = '.' + filename.split('.')[-1] if '.' in filename else None
-            else:
-                ext = mimetypes.guess_extension(part.get_content_type())
-                if not ext:
-                    # Use a generic bag-of-bits extension
-                    ext = '.bin'
-                filename = f'part-{counter:03d}{ext}'
-            counter += 1
-            if ext not in ['.nc']: 
-                continue
-            target_path = rough_data / filename
-            if target_path.exists():
-                continue  # already savedf
-            payload = part.get_payload(decode=True)
-            if payload is None:
-                continue
-            with open(target_path, 'wb') as fp:
-                fp.write(payload)
-                #print(f"Saved new attachment to {filename}")
+                if ext not in ['.nc']: 
+                        continue
+                target_path = rough_data / filename
+                print(filename)
+                if target_path.exists():
+                    continue  # already saved
+                payload = part.get_payload(decode=True)
+                if payload is None:
+                    continue
+                with open(target_path, 'wb') as fp:
+                    fp.write(payload)
     return
 
-def main():
-    fetch_metop_sst_attachments()
-
 if __name__ == '__main__':
-    main()
+    fetch_metop_sst_attachments()
