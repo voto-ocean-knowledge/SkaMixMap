@@ -14,7 +14,7 @@ from user_variables import user_dict
 
 manual_limits = user_dict['colorbar_limits']
 
-satellite_settings = root_dir / "static" / "satellite.js"
+satellite_settings = root_dir / "static" / "skamix" / "satellite.js"
 satellite_html = root_dir / "index.html"
 
 def get_satellite_settings():
@@ -168,7 +168,7 @@ def make_color_bars(ddict):
         cbar_ax = fig.add_axes([0.15 + cbar_col, 0.25 - 0.18 * step, 1, 0.08])
         plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label=label)
     ax.remove()
-    plt.savefig(root_dir / "static" / "colorbars.png", bbox_inches="tight", transparent=True)
+    plt.savefig(root_dir / "static" / "skamix"/ "colorbars.png", bbox_inches="tight", transparent=True)
 
 
 def main():
