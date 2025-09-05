@@ -18,7 +18,7 @@ def download_glider_data(dataset_id = "nrt_SEA078_M29"):
     df.to_csv(glider_csv, index=False)
     
     
-def glider_download_nrt_data(dataset_id="nrt_SEA078_M29"):
+def glider_download_nrt_data(dataset_id="nrt_SEA044_M109"):
     df = pd.read_csv(
         f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?latitude%2Clongitude%2Ctime%2Cdepth%2Ctemperature%2Csalinity")
     df = df.rename({'longitude (degrees_east)': 'lon',
@@ -28,13 +28,9 @@ def glider_download_nrt_data(dataset_id="nrt_SEA078_M29"):
     return df
 
 
-    
-
-
-def download_sailbuoy_data(dataset_id = "SB2120_M3_delayed"):
+def download_sailbuoy_data(dataset_id = "SB2121_20250905T0539_R"):
     df = pd.read_csv(
-        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?time%2Clatitude%2Clongitude&time%3E=2024-07-16&time%3C=2024-07-17")
-    df = df[::100]
+        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?time%2Clatitude%2Clongitude")
     df = df.rename({'longitude (degrees_east)': 'lon',
                     'latitude (degrees_north)': 'lat',
                     'time (UTC)': 'datetime'}, axis=1)
@@ -42,9 +38,9 @@ def download_sailbuoy_data(dataset_id = "SB2120_M3_delayed"):
     df.to_csv(sailbuoy_csv, index=False)
 
     
-def sailbuoy_download_nrt_data(dataset_id="SB2120_M3_delayed"):
+def sailbuoy_download_nrt_data(dataset_id="SB2121_20250905T0539_R"):
     df = pd.read_csv(
-        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?time%2Clatitude%2Clongitude%2CTEMP&time%3E=2024-07-16&time%3C=2024-07-17")
+        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?time%2Clatitude%2Clongitude%2CTEMP")
     df = df.rename({'longitude (degrees_east)': 'lon',
                     'latitude (degrees_north)': 'lat',
                     'time (UTC)': 'datetime'}, axis=1)
@@ -53,7 +49,7 @@ def sailbuoy_download_nrt_data(dataset_id="SB2120_M3_delayed"):
 
 def main():
     download_sailbuoy_data()
-    download_glider_data()
+    download_glider_data(dataset_id= "nrt_SEA044_M109")
     download_glider_data(dataset_id= "nrt_SEA069_M52") # for the already deployed Skagerak glider
 
 if __name__ == '__main__':
