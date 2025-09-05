@@ -167,6 +167,12 @@ def make_color_bars(ddict):
             step = 1
         cbar_ax = fig.add_axes([0.15 + cbar_col, 0.25 - 0.18 * step, 1, 0.08])
         plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label=label)
+    i += 1
+    step += 1
+    x = np.linspace(15, 19, 100)[np.newaxis, :]
+    mappable = ax.imshow(x, aspect='auto', cmap='rainbow')
+    cbar_ax = fig.add_axes([0.15 + cbar_col, 0.25 - 0.18 * step, 1, 0.08])
+    plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label='Norwegian SST forecast')
     ax.remove()
     plt.savefig(root_dir / "static" / "skamix"/ "colorbars.png", bbox_inches="tight", transparent=True)
 
