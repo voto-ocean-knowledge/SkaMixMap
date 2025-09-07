@@ -70,7 +70,6 @@ def fetch_metop_sst_attachments():
                 if ext not in ['.nc']: 
                         continue
                 target_path = rough_data / filename
-                print(filename)
                 if target_path.exists():
                     continue  # already saved
                 payload = part.get_payload(decode=True)
