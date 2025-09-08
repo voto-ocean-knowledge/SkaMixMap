@@ -20,10 +20,13 @@ heincke_proc_csv = processed_location_data / "heincke.csv"
 def heincke_download_data():
     begin_date = (datetime.datetime.now() - datetime.timedelta(hours=24)).isoformat()[:19]
     end_date = (datetime.datetime.now() + datetime.timedelta(hours=2)).isoformat()[:19]
-    url = f"https://ingest.o2a-data.de/rest/data?codes=vessel:heincke:trimble:latitude&codes=vessel:heincke:trimble:longitude&datetimeMin={begin_date}&datetimeMax={end_date}&aggregate=MINUTE&aggregateFunctions=MEAN"
+    url = f"https://ingest.o2a-data.de/rest/data?codes=vessel:heincke:trimble_5228k50585:latitude&codes=vessel:heincke:trimble_5228k50585:longitude&datetimeMin={begin_date}&datetimeMax={end_date}&aggregate=MINUTE&aggregateFunctions=MEAN"
+    print(url)
     req = requests.get(url)
     with open(heincke_raw_csv, "w", encoding="utf-8") as fout:
         fout.write(req.text)
+
+
 
 def clean_locations(df):
     """
@@ -42,10 +45,10 @@ def combine_heincke_data():
     df = pd.read_csv(heincke_raw_csv, parse_dates=['datetime'], encoding="utf-8", sep='\t')
     _log.info(f"reading in {len(df)} rows of downloaded data from R/V Heincke")
     df = df[['datetime',
-             'vessel:heincke:trimble:longitude (mean) []',
-             'vessel:heincke:trimble:latitude (mean) []', ]]
-    df = df.rename({'vessel:heincke:trimble:longitude (mean) []': 'lon',
-                    'vessel:heincke:trimble:latitude (mean) []': 'lat', }, axis=1)
+             'vessel:heincke:trimble_5228k50585:longitude (mean) [°]',
+             'vessel:heincke:trimble_5228k50585:latitude (mean) [°]', ]]
+    df = df.rename({'vessel:heincke:trimble_5228k50585:longitude (mean) [°]': 'lon',
+                    'vessel:heincke:trimble_5228k50585:latitude (mean) [°]': 'lat', }, axis=1)
     if heincke_proc_csv.exists():
         df_full = pd.read_csv(heincke_proc_csv, parse_dates=['datetime'], encoding="utf-8")
         df= df[df.datetime > df_full.datetime.max()]
