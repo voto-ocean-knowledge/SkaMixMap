@@ -29,6 +29,9 @@ def write_geojson(features, filename, var_name = "platform_locations"):
         fout.write(f"var {var_name} =")
         json.dump(geojson_dict, fout)
         fout.write(';')
+    file_json = filename.replace('.js', '.json')
+    with open(json_dir / file_json, "w", encoding='utf8') as fout:
+        json.dump(geojson_dict, fout,  ensure_ascii=False)
 
 
 def time_filter(df, start, end):
@@ -105,12 +108,12 @@ class CreateGeojson:
             }
             timestamp = str(df['datetime'].values[-1])[:19]
             if "heincke" in fn:
-                line_popup =  f'<a href="https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html">R/V Heincke</a>'
-                point_popup = f'<a href="https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html">R/V Heincke</a><br>location at <br>{timestamp}'
+                line_popup =  f"<a href='https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html'>R/V Heincke</a>"
+                point_popup = f"<a href='https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html'>R/V Heincke</a><br>location at <br>{timestamp}"
                 line_style["color"] = "white"
             elif "skagerak" in fn:
-                line_popup = f'<a href="https://www.gu.se/en/skagerak">R/V Skagerak</a>'
-                point_popup = f'<a href="https://www.gu.se/en/skagerak">R/V Skagerak</a><br>location at <br>{timestamp}'
+                line_popup = f"<a href='https://www.gu.se/en/skagerak'>R/V Skagerak</a>"
+                point_popup = f"<a href='https://www.gu.se/en/skagerak'>R/V Skagerak</a><br>location at <br>{timestamp}"
                 line_style["color"] = "green"
             elif "SEA" in fn:
                 glidermission = fn.split('.')[0]
@@ -121,8 +124,8 @@ class CreateGeojson:
             elif "SB" in fn:
                 glidermission = fn.split('.')[0]
                 platform_id, mission_id, __ = glidermission.split('_')
-                line_popup = f"glider track <br> <a href='https://observations.voiceoftheocean.org/{platform_id}/{mission_id}'>{platform_id} {mission_id}</a>"
-                point_popup = f"<a href='https://observations.voiceoftheocean.org/{platform_id}/{mission_id}'>{platform_id} {mission_id}</a><br>location at <br>{timestamp}"
+                line_popup = f"Sailbuoy <br> <a href='https://observations.voiceoftheocean.org/fleet/{platform_id}'>{platform_id}</a>"
+                point_popup = f"<a href='https://observations.voiceoftheocean.org/fleet/{platform_id}'>{platform_id}</a><br>location at <br>{timestamp}"
                 line_style["color"] = "orange"
             elif "unit_" in fn:
                 unit_id = fn.split('_')[1][:-4]
