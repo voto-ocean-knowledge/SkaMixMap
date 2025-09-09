@@ -255,11 +255,37 @@ L.control.ruler().addTo(map);
 	<br>
 	<img src="static/colorbars.png" class="img-fluid" alt="Colorbars of satellite products">
 
-	<p id="time_info"></p>
+	<div>
+		<h3>Age of data</h3>
+		Time since last page refresh: <b><p style="color:Tomato;" id="demo"></p></b>
+		<p id="time_info"></p>
+
+	</div>
 
 	<script>
 		document.getElementById("time_info").innerHTML = platform_times_info.substr(0, 10000);
 	</script>
+
+<script>
+var countDownDate = new Date();
+
+// Update the count down every 1 second
+var x = setInterval(function() {
+
+  var now = new Date().getTime();
+  var distance = now - countDownDate;
+
+  // Time calculations for days, hours, minutes and seconds
+  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+  // Display the result in the element with id="demo"
+  document.getElementById("demo").innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+
+}, 1000);
+</script>
 
 <h3>Data sources 📋</h3>
 <ul>
