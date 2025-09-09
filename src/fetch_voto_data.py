@@ -14,6 +14,7 @@ def download_glider_data(dataset_id = "nrt_SEA078_M29"):
     df = df.rename({'longitude (degrees_east)': 'lon',
                     'latitude (degrees_north)': 'lat',
                     'time (UTC)': 'datetime'}, axis=1)
+    df['datetime'] = pd.to_datetime(df.datetime).dt.round('1s')
     glider_csv = processed_location_data / (dataset_id + ".csv")
     df.to_csv(glider_csv, index=False)
     
@@ -24,7 +25,6 @@ def glider_download_nrt_data(dataset_id="nrt_SEA044_M109"):
     df = df.rename({'longitude (degrees_east)': 'lon',
                     'latitude (degrees_north)': 'lat',
                     'time (UTC)': 'datetime'}, axis=1)
-    df['datetime'] = pd.to_datetime(df.datetime)
     return df
 
 

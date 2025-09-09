@@ -4,4 +4,4 @@ requests
 xmltodict
 matplotlib
 cmocean
-
+websockets
