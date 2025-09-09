@@ -10,6 +10,7 @@ import fetch_drifter_data
 import fetch_voto_data
 import satellite_setup
 import fetch_heincke_data
+import fetch_skagerak_data
 
 def main():
     logging.basicConfig(
@@ -27,6 +28,7 @@ def main():
         fetch_heincke_data.main()
     except Exception as e:
         _log.error(f"Error occurred in Heincke data fetch: {e}")
+    fetch_skagerak_data.main()
     fetch_voto_data.main()
     make_demo_geojson.main()
     satellite_setup.main()
