@@ -108,6 +108,10 @@ class CreateGeojson:
                 line_popup =  f'<a href="https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html">R/V Heincke</a>'
                 point_popup = f'<a href="https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html">R/V Heincke</a><br>location at <br>{timestamp}'
                 line_style["color"] = "white"
+            elif "skagerak" in fn:
+                line_popup = f'<a href="https://www.gu.se/en/skagerak">R/V Skagerak</a>'
+                point_popup = f'<a href="https://www.gu.se/en/skagerak">R/V Skagerak</a><br>location at <br>{timestamp}'
+                line_style["color"] = "green"
             elif "SEA" in fn:
                 glidermission = fn.split('.')[0]
                 __, platform_id, mission_id = glidermission.split('_')
@@ -137,7 +141,42 @@ class CreateGeojson:
         write_geojson(self.json_features_list, self.outfile, var_name = self.outfile.split('.')[0])
 
 
+
+def create_info_string():
+    info_string = "<h3>Age of platform location data</h3><ul>"
+    for csv in loc_dir.glob("*.csv"):
+        fn = csv.name.split('.')[0]
+        now = datetime.datetime.now(datetime.timezone.utc)
+        df = pd.read_csv(csv, parse_dates=['datetime'])
+        # horrible hack to force localize datetime. Do not @ me
+        df.index = df.datetime
+        try:
+            df = df.tz_localize('UTC')
+        except TypeError:
+            df = df
+        last_update = df.index.max()
+        time_diff = now - last_update
+        days =  time_diff.days
+        hours, rem = divmod(time_diff.seconds, 3600)
+        minutes, seconds = divmod(rem, 60)
+        diff_str = ""
+        if days:
+            diff_str +=f"{days} days"
+        if hours:
+            diff_str += f" {hours} hours"
+        if minutes:
+            diff_str += f" {minutes} minutes"
+        diff_str += f" {seconds} seconds"
+        info = f"<li><b>{fn}</b> last location at {str(last_update)[:19]}, <b>{diff_str} ago</b><br></li>"
+        info_string += info
+    info_string += "</ul>"
+    info_file = json_dir / "info.js"
+    with open(info_file, "w") as fout:
+        fout.write(f"var platform_times_info = '{info_string}';\n")
+
+
 def main():
+    create_info_string()
     json_maker = CreateGeojson()
     json_maker.process_json()
     json_maker.write_json()
