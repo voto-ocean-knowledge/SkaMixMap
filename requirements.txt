@@ -5,3 +5,4 @@ xmltodict
 matplotlib
 cmocean
 websockets
+geopandas
