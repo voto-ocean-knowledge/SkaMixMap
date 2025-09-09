@@ -32,6 +32,7 @@
 	<script src="static/json/all_platform_locations.js" type="text/javascript"></script>
 	<script src="static/satellite.js" type="text/javascript"></script>
 	<script src="static/Leaflet.Graticule.js" type="text/javascript"></script>
+	<script src="static/json/info.js" type="text/javascript"></script>
 	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
 	<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
 
@@ -254,6 +255,11 @@ L.control.ruler().addTo(map);
 	<br>
 	<img src="static/colorbars.png" class="img-fluid" alt="Colorbars of satellite products">
 
+	<p id="time_info"></p>
+
+	<script>
+		document.getElementById("time_info").innerHTML = platform_times_info.substr(0, 10000);
+	</script>
 
 <h3>Data sources 📋</h3>
 <ul>
@@ -263,6 +269,8 @@ L.control.ruler().addTo(map);
 </ul>
 
 	<h3>Satellite product info 🛰️</h3><ul><li><a href=https://data.marine.copernicus.eu/product/SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/description><b>sst_l4</b></a> variable: Analysed sea surface temperature (analysed_sst) </li><li><a href=https://data.marine.copernicus.eu/product/SST_ATL_PHY_L3S_NRT_010_037/description><b>sst_l3</b></a> variable: Sea surface subskin temperature (sea_surface_temperature) </li><li><a href=https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_L4_NRT_008_060/description><b>ssh_l4</b></a> variable: Sea level anomaly (sla) </li><li><a href=https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_L4_NRT_008_060/description><b>adt_l4</b></a> variable: Absolute dynamic topography (adt) </li><li><a href=https://data.marine.copernicus.eu/product/OCEANCOLOUR_ATL_BGC_L4_NRT_009_116/description><b>chl_l4</b></a> variable: Chlorophyll-a concentration - Mean of the binned pixels (CHL) </li><li><a href=https://data.marine.copernicus.eu/product/BALTICSEA_ANALYSISFORECAST_PHY_003_006/description><b>sst_forecast</b></a> variable: Potential temperature (thetao) </li><li><a href=https://data.marine.copernicus.eu/product/BALTICSEA_ANALYSISFORECAST_PHY_003_006/description><b>sss_forecast</b></a> variable: Salinity (so) </li></ul>
+
+
 
 	<p> Source code 🐍 <a href="https://github.com/voto-ocean-knowledge/SkaMixMap">https://github.com/voto-ocean-knowledge/SkaMixMap</a></p>
 

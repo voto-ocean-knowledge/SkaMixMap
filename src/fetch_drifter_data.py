@@ -22,8 +22,6 @@ if not processed_location_data.exists():
     processed_location_data.mkdir(parents=True)
 
 
-mail_alarms_json = Path("mail_alarms.json")
-
 def extract_loc_from_body(fn):
     unit_id = None
     message_id = None

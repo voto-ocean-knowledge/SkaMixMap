@@ -137,7 +137,28 @@ class CreateGeojson:
         write_geojson(self.json_features_list, self.outfile, var_name = self.outfile.split('.')[0])
 
 
+def create_info_string():
+    info_string = "<h3>Age of platform location data</h3>"
+    for csv in loc_dir.glob("*.csv"):
+        fn = csv.name.split('.')[0]
+        now = datetime.datetime.now(datetime.timezone.utc)
+        df = pd.read_csv(csv, parse_dates=['datetime'])
+        # horrible hack to force localize datetime. Do not @ me
+        df.index = df.datetime
+        try:
+            df = df.tz_localize('UTC')
+        except TypeError:
+            df = df
+        last_update = df.index.max()
+        info = f"Platform {fn} last location at {str(last_update)[:19]} ({now - last_update} ago)<br>"
+        info_string += info
+    info_file = json_dir / "info.js"
+    with open(info_file, "w") as fout:
+        fout.write(f"var platform_times_info = '{info_string}';\n")
+
+
 def main():
+    create_info_string()
     json_maker = CreateGeojson()
     json_maker.process_json()
     json_maker.write_json()
