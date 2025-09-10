@@ -17,7 +17,7 @@ skagerak_raw_csv = rough_data / "skagerak_raw.csv"
 processed_location_data = Path(root_dir) / "data" / "processed_location_data"
 skagerak_proc_csv = processed_location_data / "skagerak.csv"
 
-def skagerak_download_data(records=100, return_df=True):
+def skagerak_download_data(records=100, return_df=True, remove_cached=True):
     url = f"https://postgrest-skagerak.apps.k8s.gu.se/sk_position?limit={records}&order=ts.desc"
     req = requests.get(url)
     json_data = req.json()
@@ -30,6 +30,9 @@ def skagerak_download_data(records=100, return_df=True):
     df = df.tz_localize('UTC')
     df = df.drop('datetime', axis=1)
     df.to_csv(skagerak_raw_csv)
+    if remove_cached:
+        if skagerak_proc_csv.exists():
+            skagerak_proc_csv.unlink()
     combine_skagerak_data()
     if return_df:
         df_full = pd.read_csv(skagerak_proc_csv, parse_dates=['datetime'], encoding="utf-8")
@@ -54,8 +57,7 @@ def combine_skagerak_data():
 
 def skagerak_download_tsg_data(records=10000):
     url = f"https://postgrest-skagerak.apps.k8s.gu.se/sk_ferrybox?limit={records}&order=ts.desc"
-    if not skagerak_proc_csv.exists():
-        skagerak_download_data(records=records)
+    skagerak_download_data(records=records)
     req = requests.get(url)
     json_data = req.json()
     df = pd.DataFrame(json_data)
@@ -72,7 +74,7 @@ def skagerak_download_tsg_data(records=10000):
     
     
 def main():
-    skagerak_download_data(return_df=False)
+    skagerak_download_data(remove_cached=False)
 
 if __name__ == '__main__':
     logging.basicConfig(

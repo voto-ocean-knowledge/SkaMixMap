@@ -17,7 +17,7 @@ heincke_raw_csv = rough_data / "heincke_raw.csv"
 processed_location_data = Path(root_dir) / "data" / "processed_location_data"
 heincke_proc_csv = processed_location_data / "heincke.csv"
 
-def heincke_download_data(start=datetime.datetime.now() - datetime.timedelta(hours=24), end=datetime.datetime.now() + datetime.timedelta(hours=2), return_df=True):
+def heincke_download_data(start=datetime.datetime.now() - datetime.timedelta(hours=24), end=datetime.datetime.now() + datetime.timedelta(hours=2), return_df=True, remove_cached=True):
     begin_date = start.isoformat()[:19]
     end_date = end.isoformat()[:19]
     url = (f"https://ingest.o2a-data.de/rest/data?"
@@ -30,6 +30,9 @@ def heincke_download_data(start=datetime.datetime.now() - datetime.timedelta(hou
     req = requests.get(url)
     with open(heincke_raw_csv, "w", encoding="utf-8") as fout:
         fout.write(req.text)
+    if remove_cached:
+        if heincke_proc_csv.exists():
+            heincke_proc_csv.unlink()
     combine_heincke_data()
     if return_df:
         df = pd.read_csv(heincke_proc_csv, parse_dates=['datetime'], encoding="utf-8")
@@ -88,10 +91,8 @@ def heincke_download_check_times(start, end):
         end_new =  df.datetime.min()
     return start_new, end_new
 
-heincke_download_underway_data = heincke_download_data
-
 def main():
-    heincke_download_data(return_df=False)
+    heincke_download_data(remove_cached=False)
 
 if __name__ == '__main__':
     logging.basicConfig(
