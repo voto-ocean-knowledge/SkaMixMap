@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import numpy as np
 import sys
 import geopandas as gpd
 import os
@@ -16,8 +17,8 @@ skagerak_raw_csv = rough_data / "skagerak_raw.csv"
 processed_location_data = Path(root_dir) / "data" / "processed_location_data"
 skagerak_proc_csv = processed_location_data / "skagerak.csv"
 
-def skagerak_download_data():
-    url = f"https://postgrest-skagerak.apps.k8s.gu.se/sk_position?limit=100&order=ts.desc"
+def skagerak_download_data(records=100, return_df=True, remove_cached=True):
+    url = f"https://postgrest-skagerak.apps.k8s.gu.se/sk_position?limit={records}&order=ts.desc"
     req = requests.get(url)
     json_data = req.json()
     gdf = gpd.GeoDataFrame(json_data)
@@ -29,6 +30,13 @@ def skagerak_download_data():
     df = df.tz_localize('UTC')
     df = df.drop('datetime', axis=1)
     df.to_csv(skagerak_raw_csv)
+    if remove_cached:
+        if skagerak_proc_csv.exists():
+            skagerak_proc_csv.unlink()
+    combine_skagerak_data()
+    if return_df:
+        df_full = pd.read_csv(skagerak_proc_csv, parse_dates=['datetime'], encoding="utf-8")
+        return df_full
 
 
 def combine_skagerak_data():
@@ -47,10 +55,26 @@ def combine_skagerak_data():
     df_full = df_full.sort_values("datetime")
     df_full.to_csv(skagerak_proc_csv, encoding="utf-8", index=False)
 
-
+def skagerak_download_tsg_data(records=10000):
+    url = f"https://postgrest-skagerak.apps.k8s.gu.se/sk_ferrybox?limit={records}&order=ts.desc"
+    skagerak_download_data(records=records)
+    req = requests.get(url)
+    json_data = req.json()
+    df = pd.DataFrame(json_data)
+    df = df.rename({'ts': 'datetime'}, axis=1)
+    df = df.sort_values("datetime")
+    df.index = (pd.to_datetime(df.datetime))
+    df = df.tz_localize('UTC')
+    df = df.drop('datetime', axis=1)
+    df_loc = pd.read_csv(skagerak_proc_csv, parse_dates=['datetime'])
+    df_combi = pd.merge_asof(df, df_loc, left_on='datetime', right_on='datetime')
+    df_combi = df_combi[~np.isnan(df_combi.lon)]
+    return df_combi
+    
+    
+    
 def main():
-    skagerak_download_data()
-    combine_skagerak_data()
+    skagerak_download_data(remove_cached=False)
 
 if __name__ == '__main__':
     logging.basicConfig(
