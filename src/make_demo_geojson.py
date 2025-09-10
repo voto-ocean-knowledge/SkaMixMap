@@ -12,7 +12,7 @@ sys.path.insert(0, folder)
 from user_variables import user_dict
 data_dir = Path(folder) / 'data'
 loc_dir = data_dir / "processed_location_data"
-json_dir = Path(folder)  / "static" / "json"
+json_dir = Path(folder)  / "static" / "skamix" / "json"
 if not json_dir.exists():
     json_dir.mkdir(parents=True)
 
