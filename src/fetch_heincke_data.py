@@ -17,14 +17,29 @@ heincke_raw_csv = rough_data / "heincke_raw.csv"
 processed_location_data = Path(root_dir) / "data" / "processed_location_data"
 heincke_proc_csv = processed_location_data / "heincke.csv"
 
-def heincke_download_data():
-    begin_date = (datetime.datetime.now() - datetime.timedelta(hours=24)).isoformat()[:19]
-    end_date = (datetime.datetime.now() + datetime.timedelta(hours=2)).isoformat()[:19]
-    url = f"https://ingest.o2a-data.de/rest/data?codes=vessel:heincke:trimble_5228k50585:latitude&codes=vessel:heincke:trimble_5228k50585:longitude&datetimeMin={begin_date}&datetimeMax={end_date}&aggregate=MINUTE&aggregateFunctions=MEAN"
-    print(url)
+def heincke_download_data(start=datetime.datetime.now() - datetime.timedelta(hours=24), end=datetime.datetime.now() + datetime.timedelta(hours=2), return_df=True):
+    begin_date = start.isoformat()[:19]
+    end_date = end.isoformat()[:19]
+    url = (f"https://ingest.o2a-data.de/rest/data?"
+           f"codes=vessel:heincke:trimble_5228k50585:latitude&"
+           f"codes=vessel:heincke:trimble_5228k50585:longitude&"
+           f"codes=vessel:heincke:tsg_heincke:sbe38_0474:watertemp&"
+           f"datetimeMin={begin_date}&"
+           f"datetimeMax={end_date}&"
+           f"aggregate=MINUTE&aggregateFunctions=MEAN")
     req = requests.get(url)
     with open(heincke_raw_csv, "w", encoding="utf-8") as fout:
         fout.write(req.text)
+    combine_heincke_data()
+    if return_df:
+        df = pd.read_csv(heincke_proc_csv, parse_dates=['datetime'], encoding="utf-8")
+        df = df.rename({'vessel:heincke:trimble:longitude (mean) []': 'lon',
+                        'vessel:heincke:trimble:latitude (mean) []': 'lat',
+                        'vessel:heincke:tsg:salinity (mean) [0/00]': 'salinity [PSU]',
+                        'vessel:heincke:tsg:sbe38:temperature (mean) [°C]': 'temperature [°C]',
+                        }, axis=1)
+        df_sub = df[(df.datetime >= start) & (df.datetime <= end)]
+        return df_sub
 
 
 
@@ -44,11 +59,10 @@ def clean_locations(df):
 def combine_heincke_data():
     df = pd.read_csv(heincke_raw_csv, parse_dates=['datetime'], encoding="utf-8", sep='\t')
     _log.info(f"reading in {len(df)} rows of downloaded data from R/V Heincke")
-    df = df[['datetime',
-             'vessel:heincke:trimble_5228k50585:longitude (mean) [°]',
-             'vessel:heincke:trimble_5228k50585:latitude (mean) [°]', ]]
     df = df.rename({'vessel:heincke:trimble_5228k50585:longitude (mean) [°]': 'lon',
-                    'vessel:heincke:trimble_5228k50585:latitude (mean) [°]': 'lat', }, axis=1)
+                    'vessel:heincke:trimble_5228k50585:latitude (mean) [°]': 'lat',
+                    'vessel:heincke:tsg_heincke:sbe38_0474:watertemp (mean) [°c]': 'temperature [°C]',
+                    }, axis=1)
     if heincke_proc_csv.exists():
         df_full = pd.read_csv(heincke_proc_csv, parse_dates=['datetime'], encoding="utf-8")
         df= df[df.datetime > df_full.datetime.max()]
@@ -62,24 +76,6 @@ def combine_heincke_data():
     df_full = clean_locations(df_full)
     df_full.to_csv(heincke_proc_csv, index=False, encoding="utf-8")
 
-def heincke_download_underway_data(start=datetime.datetime.now() - datetime.timedelta(hours=24), end=datetime.datetime.now() + datetime.timedelta(hours=2)):
-    raw_csv = heincke_raw_csv
-    start_new, end_new = heincke_download_check_times(start, end)
-    begin_date = start_new.isoformat()[:19]
-    end_date = end_new.isoformat()[:19]
-    url = f"https://dashboard.awi.de/data-xxl/rest/data?beginDate={begin_date}&endDate={end_date}&aggregate=minute&aggregateFunctions=MEAN&sensors=vessel:heincke:trimble:longitude&sensors=vessel:heincke:trimble:latitude&sensors=vessel:heincke:tsg:sbe38:temperature&sensors=vessel:heincke:tsg:salinity"
-    req = requests.get(url)
-    with open(raw_csv, "w", encoding="utf-8") as fout:
-        fout.write(req.text)  
-    combine_heincke_data()   
-    df = pd.read_csv(heincke_proc_csv, parse_dates=['datetime'], encoding="utf-8")
-    df = df.rename({'vessel:heincke:trimble:longitude (mean) []': 'lon',
-                    'vessel:heincke:trimble:latitude (mean) []': 'lat', 
-                    'vessel:heincke:tsg:salinity (mean) [0/00]': 'salinity [PSU]',
-                    'vessel:heincke:tsg:sbe38:temperature (mean) [°C]': 'temperature [°C]',
-                    }, axis=1)
-    df_sub = df[(df.datetime >= start) & (df.datetime <= end)]
-    return df_sub
 
 def heincke_download_check_times(start, end):
     try: 
@@ -92,10 +88,10 @@ def heincke_download_check_times(start, end):
         end_new =  df.datetime.min()
     return start_new, end_new
 
+heincke_download_underway_data = heincke_download_data
 
 def main():
-    heincke_download_data()
-    combine_heincke_data()
+    heincke_download_data(return_df=False)
 
 if __name__ == '__main__':
     logging.basicConfig(
