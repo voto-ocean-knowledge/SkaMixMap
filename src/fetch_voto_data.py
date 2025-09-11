@@ -51,6 +51,7 @@ def main():
     download_sailbuoy_data()
     download_glider_data(dataset_id= "nrt_SEA044_M109")
     download_glider_data(dataset_id= "nrt_SEA069_M52") # for the already deployed Skagerak glider
+    download_glider_data(dataset_id= "nrt_SEA068_M46") #  Deployed 2025-09-10
 
 if __name__ == '__main__':
     main()
