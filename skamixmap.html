@@ -35,21 +35,23 @@
 
 {% block main_content %}
 
-<div class="container-xl ms-0">
+<div class="mt-4 container-xl glider-list">
 
 	<div class="row">
 	<div class="col-md-8">
 				<h1> SkaMix operational map</h1>
-               <p>This map displays the near real time locations of vessels and autonomous platforms during the SkaMix project. For now, it updates every <del>30</del> 10 minutes. <del>Only the VOTO platforms are reporting live locations</del> All platform locations are live! More improvements to come soon!</p>
+               <p>This map displays the near real time locations of vessels and autonomous platforms during the SkaMix project. For now, it updates every 10 minutes.  More improvements to come soon!</p>
                 <p>👋 <b>Instructions:</b> click on the map for a lon-lat popup. Use the layers icon in the top right to select satellite imagery etc. Use the compass icon to measure distances and bearings. Zoom and full screen toggles are in the top left corner.</p>
-		<p>💔 <b>Currently broken (2025-09-09 18:00): </b> Nothing I'm aware of! But my brain is pretty toasted rn 🙃 email me: <a href = "mailto: callum.rollo@voiceoftheocean.org">callum.rollo@voiceoftheocean.org</a>  </p>
+		<p>💔 <b>Currently broken (2025-09-11 10:00): </b> Nothing I'm aware of! email bugs to: <a href = "mailto: callum.rollo@voiceoftheocean.org">callum.rollo@voiceoftheocean.org</a>  </p>
 	</div>
 		<div class="col-md-2">
 		</div>
 		<div class="col-md-2">
 			<img src="/static/skamix/images/skamix_logo.svg" class="rounded-circle img-fluid" alt="SkaMix logo by Grete Boskamp"/>
 		</div>
-	</div>
+
+        <div class="row">
+            <div class="col-md-8 ">
 
 
 <div id="map" style="height: 600px"></div>
@@ -244,29 +246,26 @@ L.control.ruler().addTo(map);
 
 </script>
 
-</div>
 
-<div class="container-xl ms-0">
+            </div>
+            <div class="col-md-4">
+		<p id="clock"></p>
+				Time since last page refresh: <b><p style="color:Tomato;" id="demo"></p></b>
+				<h3>Time since last location update</h3>
+				<p>Refresh to update!</p>
+				<p id="time_info"></p>
+            </div>
+        </div>
+    </div>
+
+	<div class="row">
 	<br>
 	<img src="/static/skamix/colorbars.png" class="img-fluid" alt="Colorbars of satellite products">
-
-	<div>
-		<h3>Age of data</h3>
-		Time at last refresh (UTC): <p id="clock"></p>
-		Time since last page refresh: <b><p style="color:Tomato;" id="demo"></p></b>
-		<p id="time_info"></p>
-
-	</div>
-
-
 
 	<script>
 		document.getElementById("time_info").innerHTML = platform_times_info;
 		const utcDateString = new Date().toISOString();
-		document.getElementById("clock").innerHTML = utcDateString;
-	</script>
-
-<script>
+		document.getElementById("clock").innerHTML = " Time at last refresh (UTC): " + utcDateString;
 var countDownDate = new Date();
 
 // Update the count down every 1 second
@@ -291,13 +290,14 @@ var x = setInterval(function() {
 <ul>
 	<li><b>Glider data</b> <a href="https://observations.voiceoftheocean.org/">Voice of the Ocean Foundation</a></li>
 	<li><b>R/V Heicke</b> O2A <a href="https://o2a-data.de/documentation">https://o2a-data.de/documentation</a> Koppe, R., Gerchow, P., Macario, A., Haas, A., Schäfer-Neth, C. and Pfeiffenberger, H. (2015): O2A: A Generic Framework for Enabling the Flow of Sensor Observations to Archives and Publications, OCEANS 2015 Genova. doi:10.1109/OCEANS-Genova.2015.7271657</li>
+	<li><b>R/V Skagerak</b> <a href="https://postgrest-skagerak.apps.k8s.gu.se">Postgres server</a> operated by Skagerak Facility, University of Gothenburg</li>
 	<li><b>Satellite products</b> <a href="https://help.marine.copernicus.eu/en/articles/4444611-how-to-cite-copernicus-marine-products-and-services"> Copernicus Marine</a> doi: <a href="https://doi.org/10.48670/moi-00154">https://doi.org/10.48670/moi-00154</a></li>
+	<li><b>Norwegian SST forecast</b> <a href="https://thredds.met.no/thredds/wms"> Meteorologisk institutt, Norway</a>
 </ul>
 
 	<h3>Satellite product info 🛰️</h3><ul><li><a href=https://data.marine.copernicus.eu/product/SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/description><b>sst_l4</b></a> variable: Analysed sea surface temperature (analysed_sst) </li><li><a href=https://data.marine.copernicus.eu/product/SST_ATL_PHY_L3S_NRT_010_037/description><b>sst_l3</b></a> variable: Sea surface subskin temperature (sea_surface_temperature) </li><li><a href=https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_L4_NRT_008_060/description><b>ssh_l4</b></a> variable: Sea level anomaly (sla) </li><li><a href=https://data.marine.copernicus.eu/product/SEALEVEL_EUR_PHY_L4_NRT_008_060/description><b>adt_l4</b></a> variable: Absolute dynamic topography (adt) </li><li><a href=https://data.marine.copernicus.eu/product/OCEANCOLOUR_ATL_BGC_L4_NRT_009_116/description><b>chl_l4</b></a> variable: Chlorophyll-a concentration - Mean of the binned pixels (CHL) </li><li><a href=https://data.marine.copernicus.eu/product/BALTICSEA_ANALYSISFORECAST_PHY_003_006/description><b>sst_forecast</b></a> variable: Potential temperature (thetao) </li><li><a href=https://data.marine.copernicus.eu/product/BALTICSEA_ANALYSISFORECAST_PHY_003_006/description><b>sss_forecast</b></a> variable: Salinity (so) </li></ul>
 
-
-
+<hr>
 	<p> Source code 🐍 <a href="https://github.com/voto-ocean-knowledge/SkaMixMap">https://github.com/voto-ocean-knowledge/SkaMixMap</a></p>
 
 	<p>	Made under pressure in the Baltic by <a href="https://github.com/callumrollo">Callum Rollo</a> and <a href="https://github.com/GreteOcean">Grete Boskamp</a></p>
@@ -305,4 +305,5 @@ var x = setInterval(function() {
 	  </div>
 
 
+</div>
 {% endblock %}
