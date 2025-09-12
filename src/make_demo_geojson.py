@@ -70,7 +70,8 @@ def locations_to_geojson_point(df, popup):
     point_dict = {
         "type": "Feature",
         "properties": {
-            "popupContent": popup
+            "popupContent": popup,
+            "tooltipContent": popup.split('<br>')[0]
         },
         "geometry": {"type": "Point", "coordinates": [coords[-1][0], coords[-1][1]]
                      }

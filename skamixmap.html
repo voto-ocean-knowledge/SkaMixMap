@@ -20,6 +20,8 @@
 	<script src="/static/skamix/Leaflet.Graticule.js" type="text/javascript"></script>
 	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
 	<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+    <link rel="stylesheet" href="/static/skamix/skamix.css?version=2"/>
+
 
 {% endblock %}
 
@@ -110,6 +112,9 @@ var chl_l4 = L.tileLayer(template, {
 
 // Function adds popup content to markers
 function popupText(feature, layer) {
+  	if (feature.properties.tooltipContent) {
+     	layer.bindTooltip(feature.properties.tooltipContent, {permanent: true, interactive: true, className: 'labelstyle', opacity:0.8});
+   	}
 	layer.bindPopup(feature.properties.popupContent);}
 
 // Add demo data incorporating style and popup info from the geojson
