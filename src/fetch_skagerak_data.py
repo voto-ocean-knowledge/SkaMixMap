@@ -25,11 +25,25 @@ def skagerak_download_data(records=100, return_df=True, remove_cached=True):
     from shapely.geometry import shape
     gdf['geom'] = gdf['geom'].apply(shape)
     gdf = gpd.GeoDataFrame(gdf).set_geometry('geom')
-    df = pd.DataFrame({'datetime': gdf.ts, 'lat': gdf.geometry.y, 'lon': gdf.geometry.x})
-    df.index = (pd.to_datetime(df.datetime))
-    df = df.tz_localize('UTC')
-    df = df.drop('datetime', axis=1)
-    df.to_csv(skagerak_raw_csv)
+    df_loc = pd.DataFrame({'datetime': gdf.ts, 'lat': gdf.geometry.y, 'lon': gdf.geometry.x})
+    df_loc.index = (pd.to_datetime(df_loc.datetime))
+    df_loc = df_loc.tz_localize('UTC')
+    df_loc = df_loc.drop('datetime', axis=1).sort_values('datetime')
+    url = f"https://postgrest-skagerak.apps.k8s.gu.se/sk_ferrybox?limit={records}&order=ts.desc"
+    req = requests.get(url)
+    json_data = req.json()
+    df_ferrybox = pd.DataFrame(json_data)
+    df_ferrybox = df_ferrybox.rename({'ts': 'datetime'}, axis=1)
+    df_ferrybox = df_ferrybox.sort_values("datetime")
+    df_ferrybox.index = (pd.to_datetime(df_ferrybox.datetime))
+    df_ferrybox = df_ferrybox.tz_localize('UTC')
+    df_ferrybox = df_ferrybox.drop('datetime', axis=1)
+    df_combi = pd.merge_asof(df_loc, df_ferrybox, left_on='datetime', right_on='datetime')
+    df_combi = df_combi[~np.isnan(df_combi.lon)]
+    df_combi = df_combi[['datetime', 'fb_quality', 'fb_pressure', 'fb_flow', 'watertemp', 'salinity', 'sndspeed', 'ph', 'oxygen', 'saturation', 'chlorophyll', 'phycocyanin', 'turbidity', 'lat', 'lon']]
+    df_combi = df_combi.rename({'watertemp': 'TEMP',
+                    }, axis=1)
+    df_combi.to_csv(skagerak_raw_csv, index=False)
     if remove_cached:
         if skagerak_proc_csv.exists():
             skagerak_proc_csv.unlink()
@@ -55,26 +69,9 @@ def combine_skagerak_data():
     df_full = df_full.sort_values("datetime")
     df_full.to_csv(skagerak_proc_csv, encoding="utf-8", index=False)
 
-def skagerak_download_tsg_data(records=10000):
-    url = f"https://postgrest-skagerak.apps.k8s.gu.se/sk_ferrybox?limit={records}&order=ts.desc"
-    skagerak_download_data(records=records)
-    req = requests.get(url)
-    json_data = req.json()
-    df = pd.DataFrame(json_data)
-    df = df.rename({'ts': 'datetime'}, axis=1)
-    df = df.sort_values("datetime")
-    df.index = (pd.to_datetime(df.datetime))
-    df = df.tz_localize('UTC')
-    df = df.drop('datetime', axis=1)
-    df_loc = pd.read_csv(skagerak_proc_csv, parse_dates=['datetime'])
-    df_combi = pd.merge_asof(df, df_loc, left_on='datetime', right_on='datetime')
-    df_combi = df_combi[~np.isnan(df_combi.lon)]
-    return df_combi
-    
-    
-    
+
 def main():
-    skagerak_download_data(remove_cached=False)
+    skagerak_download_data(remove_cached=False, records=100, return_df=False)
 
 if __name__ == '__main__':
     logging.basicConfig(

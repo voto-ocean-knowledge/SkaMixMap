@@ -6,6 +6,8 @@ import json
 import os
 import sys
 import logging
+import matplotlib
+import cmocean.cm as cmo
 _log = logging.getLogger(__name__)
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, folder)
@@ -78,12 +80,53 @@ def locations_to_geojson_point(df, popup):
     return point_dict
 
 
+def temperature_geojson_points(df, platform):
+    platform_name = platform.split('csv')[0]
+    if "TEMP" not in list(df):
+        return []
+    dict_list = []
+    cbar_lims = user_dict["colorbar_limits"]["sst_forecast"]
+    cmap = cmo.thermal
+    df = df.set_index('datetime')
+    # if sampling more than once every 5 minutes, resample to take first sample every 10 minutes
+    if df.index.diff().median() < pd.Timedelta('5min'):
+        _log.info(f"Downsampling data interval from {platform} from {df.index.diff().mean()} to 10 minutes")
+        df = df.resample('10min').first()
+
+    for i, row in df.iterrows():
+        if np.isnan(row.lon) or np.isnan(row.lat) or np.isnan(row.TEMP):
+            continue
+        temperature = row.TEMP
+        cbar_loc = (temperature - cbar_lims['min']) / (cbar_lims['max'] - cbar_lims['min'])
+        rgba = cmap(cbar_loc)
+        color_hex = matplotlib.colors.rgb2hex(rgba)
+        popup = (f"Temperature: {row.TEMP} C<br>"
+                 f"{str(i)[:19]}<br>"
+                 f"Source: {platform_name}")
+
+        point_dict = {
+            "type": "Feature",
+            "properties": {
+                "popupContent": popup,
+                "color": color_hex
+            },
+            "geometry": {"type": "Point", "coordinates": [row.lon, row.lat]
+                         }
+        }
+        dict_list.append(point_dict)
+
+    return dict_list
+
+
+
+
 class CreateGeojson:
     def __init__(self):
         self.user_dict = user_dict
         self.json_features_list = []
         self.outfile = "all_platform_locations.js"
         self.filter_json = False
+        self.colour_by_temp = False
 
     def process_json(self):
         for csv in loc_dir.glob("*.csv"):
@@ -134,7 +177,11 @@ class CreateGeojson:
             else:
                 _log.warning(f"unkown data source {csv}. Skipping")
                 continue
-
+            if self.colour_by_temp:
+                coloured_points = temperature_geojson_points(df, fn)
+                self.json_features_list += coloured_points
+                self.outfile = self.outfile.replace('locations', 'temperature')
+                continue
             line_dict = locations_to_geojson_line(df, line_popup, line_style)
             self.json_features_list.append(line_dict)
             point_dict = locations_to_geojson_point(df, point_popup)
@@ -180,9 +227,17 @@ def create_info_string():
 
 def main():
     create_info_string()
+    # Temperature
+    json_maker = CreateGeojson()
+    json_maker.colour_by_temp = True
+    json_maker.filter_json = True
+    json_maker.process_json()
+    json_maker.write_json()
+
     json_maker = CreateGeojson()
     json_maker.process_json()
     json_maker.write_json()
+
     json_maker = CreateGeojson()
     json_maker.filter_json = True
     json_maker.process_json()
