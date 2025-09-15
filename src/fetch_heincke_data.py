@@ -39,7 +39,7 @@ def heincke_download_data(start=datetime.datetime.now() - datetime.timedelta(hou
         df = df.rename({'vessel:heincke:trimble:longitude (mean) []': 'lon',
                         'vessel:heincke:trimble:latitude (mean) []': 'lat',
                         'vessel:heincke:tsg:salinity (mean) [0/00]': 'salinity [PSU]',
-                        'vessel:heincke:tsg:sbe38:temperature (mean) [°C]': 'temperature [°C]',
+                        'vessel:heincke:tsg:sbe38:temperature (mean) [°C]': 'TEMP',
                         }, axis=1)
         df_sub = df[(df.datetime >= start) & (df.datetime <= end)]
         return df_sub
@@ -64,7 +64,7 @@ def combine_heincke_data():
     _log.info(f"reading in {len(df)} rows of downloaded data from R/V Heincke")
     df = df.rename({'vessel:heincke:trimble_5228k50585:longitude (mean) [°]': 'lon',
                     'vessel:heincke:trimble_5228k50585:latitude (mean) [°]': 'lat',
-                    'vessel:heincke:tsg_heincke:sbe38_0474:watertemp (mean) [°c]': 'temperature [°C]',
+                    'vessel:heincke:tsg_heincke:sbe38_0474:watertemp (mean) [°c]': 'TEMP',
                     }, axis=1)
     if heincke_proc_csv.exists():
         df_full = pd.read_csv(heincke_proc_csv, parse_dates=['datetime'], encoding="utf-8")

@@ -24,17 +24,22 @@ def main():
     start = datetime.datetime.now()
     _log.info("START")
     fetch_drifter_data.main()
+    _log.info(f"fetched drifters. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
     try:
         fetch_heincke_data.main()
     except Exception as e:
         _log.error(f"Error occurred in Heincke data fetch: {e}")
+    _log.info(f"fetched heincke. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
     fetch_skagerak_data.main()
+    _log.info(f"fetched skagerak. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
     fetch_voto_data.main()
+    _log.info(f"fetched voto. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
     make_demo_geojson.main()
+    _log.info(f"made demo geojson. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
     satellite_setup.main()
+    _log.info(f"fetched satellite. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
 
-    end = datetime.datetime.now()
-    _log.info(f"END elapsed time: {round((end - start).total_seconds(), 1)} seconds")
+    _log.info(f"END elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
 
 if __name__ == '__main__':
     main()
