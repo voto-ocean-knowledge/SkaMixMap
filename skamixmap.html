@@ -53,6 +53,7 @@
         var platform_locations = JSON.parse('{{ platform_locations_json | tojson | safe}}');
         var all_platform_locations = JSON.parse('{{ all_platform_locations_json | tojson | safe}}');
         var platform_temperature = JSON.parse('{{ platform_temperature_json | tojson | safe}}');
+        var platform_salinity = JSON.parse('{{ platform_salinity_json | tojson | safe}}');
         var platform_times_info = {{time_info | safe}};
 
 	const map = L.map('map',  {fullscreenControl: {pseudoFullscreen: true}}).setView([56, 12], 6);
@@ -128,6 +129,17 @@ let platforms_full = L.geoJSON(all_platform_locations, {
 		onEachFeature: popupText})
 
 let platforms_temperature = L.geoJson(platform_temperature, {
+	pointToLayer: function (feature, latlng) {
+		return new L.CircleMarker(latlng, {radius: 7,
+			color: 'black',
+			fillOpacity: 1,
+			fillColor: feature.properties.color,
+			weight: 0,});
+	},
+	onEachFeature: popupText
+});
+
+let platforms_salinity = L.geoJson(platform_salinity, {
 	pointToLayer: function (feature, latlng) {
 		return new L.CircleMarker(latlng, {radius: 7,
 			color: 'black',
@@ -235,6 +247,7 @@ overlayMaps["Graticule"] = graticule;
 overlayMaps["Platforms"] = platforms;
 overlayMaps["Platforms (full tracks)"] = platforms_full;
 overlayMaps["SST from platforms"] = platforms_temperature;
+overlayMaps["SSS from platforms"] = platforms_salinity;
 
 var controlPanel = L.control.layers(baseMaps, overlayMaps).addTo(map);
 map.addControl(new L.Control.ScaleNautic({
@@ -270,7 +283,7 @@ L.control.ruler().addTo(map);
 
 	<div class="row">
 	<br>
-	<img src="/static/skamix/colorbars.png" class="img-fluid" alt="Colorbars of satellite products">
+	<img src="/static/skamix/colorbars1.png" class="img-fluid" alt="Colorbars of satellite products">
 
 	<script>
 		document.getElementById("time_info").innerHTML = platform_times_info;
