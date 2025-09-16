@@ -8,7 +8,7 @@ processed_location_data = Path(root_dir) / "data" / "processed_location_data"
 def download_glider_data(dataset_id = "nrt_SEA078_M29", surface_upcast_data_only=False):
     # Download glider data locations from VOTO ERDDAP
     df = pd.read_csv(
-        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?latitude%2Clongitude%2Ctime%2Cprofile_num%2Ctemperature%2Cdepth%2Cnav_state",
+        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?latitude%2Clongitude%2Ctime%2Cprofile_num%2Ctemperature%2Csalinity%2Cdepth%2Cnav_state",
         parse_dates=['time (UTC)'])
     if surface_upcast_data_only:
         # Filter to only data when glider going up in uppermost 10 m. Necessary for good SST estimate
@@ -18,6 +18,7 @@ def download_glider_data(dataset_id = "nrt_SEA078_M29", surface_upcast_data_only
     df = df.rename({'longitude (degrees_east)': 'lon',
                     'latitude (degrees_north)': 'lat',
                     'temperature (Celsius)': 'TEMP',
+                    'salinity (1e-3)': 'PSAL',
                     'time (UTC)': 'datetime'}, axis=1)
     df['datetime'] = pd.to_datetime(df.datetime).dt.round('1s')
     glider_csv = processed_location_data / (dataset_id + ".csv")
@@ -35,10 +36,11 @@ def glider_download_nrt_data(dataset_id="nrt_SEA044_M109"):
 
 def download_sailbuoy_data(dataset_id = "SB2121_20250905T0539_R", return_df=True):
     df = pd.read_csv(
-        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?time%2Clatitude%2Clongitude%2CTEMP")
+        f"https://erddap.observations.voiceoftheocean.org/erddap/tabledap/{dataset_id}.csvp?time%2Clatitude%2Clongitude%2CTEMP%2CPSAL")
     df = df.rename({'longitude (degrees_east)': 'lon',
                     'latitude (degrees_north)': 'lat',
                     'TEMP (degree_C)': 'TEMP',
+                    'PSAL (1e-3)': 'PSAL',
                     'time (UTC)': 'datetime'}, axis=1)
     sailbuoy_csv = processed_location_data / (dataset_id + ".csv")
     df.to_csv(sailbuoy_csv, index=False)

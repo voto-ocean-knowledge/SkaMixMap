@@ -80,13 +80,17 @@ def locations_to_geojson_point(df, popup):
     return point_dict
 
 
-def temperature_geojson_points(df, platform):
+def colour_geojson_points(df, platform, color_by="TEMP"):
     platform_name = platform.split('csv')[0]
-    if "TEMP" not in list(df):
+    if color_by not in list(df):
         return []
     dict_list = []
-    cbar_lims = user_dict["colorbar_limits"]["sst_forecast"]
-    cmap = cmo.thermal
+    if color_by == "TEMP":
+        cbar_lims = user_dict["colorbar_limits"]["sst_forecast"]
+        cmap = cmo.thermal
+    else:
+        cbar_lims = user_dict["colorbar_limits"]["sss_forecast"]
+        cmap = cmo.haline
     df = df.set_index('datetime')
     # if sampling more than once every 5 minutes, resample to take first sample every 10 minutes
     if df.index.diff().median() < pd.Timedelta('5min'):
@@ -96,13 +100,16 @@ def temperature_geojson_points(df, platform):
     for i, row in df.iterrows():
         if np.isnan(row.lon) or np.isnan(row.lat) or np.isnan(row.TEMP):
             continue
-        temperature = row.TEMP
+        temperature = row[color_by]
         cbar_loc = (temperature - cbar_lims['min']) / (cbar_lims['max'] - cbar_lims['min'])
         rgba = cmap(cbar_loc)
         color_hex = matplotlib.colors.rgb2hex(rgba)
-        popup = (f"Temperature: {row.TEMP} C<br>"
-                 f"{str(i)[:19]}<br>"
-                 f"Source: {platform_name}")
+        if color_by == "TEMP":
+            popup = f"Temperature: {row.TEMP} C<br>"
+        else:
+            popup = f"Salinity: {row.PSAL} (1e-3) <br>"
+
+        popup += f"{str(i)[:19]}<br>Source: {platform_name}"
 
         point_dict = {
             "type": "Feature",
@@ -127,6 +134,7 @@ class CreateGeojson:
         self.outfile = "all_platform_locations.js"
         self.filter_json = False
         self.colour_by_temp = False
+        self.colour_by_psal = False
 
     def process_json(self):
         for csv in loc_dir.glob("*.csv"):
@@ -175,12 +183,17 @@ class CreateGeojson:
                 line_popup = f"unit {unit_id}"
                 point_popup =  f"unit {unit_id}<br>location at <br>{timestamp}"
             else:
-                _log.warning(f"unkown data source {csv}. Skipping")
+                _log.warning(f"unknown data source {csv}. Skipping")
                 continue
             if self.colour_by_temp:
-                coloured_points = temperature_geojson_points(df, fn)
+                coloured_points = colour_geojson_points(df, fn)
                 self.json_features_list += coloured_points
                 self.outfile = self.outfile.replace('locations', 'temperature')
+                continue
+            elif self.colour_by_psal:
+                coloured_points = colour_geojson_points(df, fn, color_by="PSAL")
+                self.json_features_list += coloured_points
+                self.outfile = self.outfile.replace('locations', 'salinity')
                 continue
             line_dict = locations_to_geojson_line(df, line_popup, line_style)
             self.json_features_list.append(line_dict)
@@ -230,6 +243,13 @@ def main():
     # Temperature
     json_maker = CreateGeojson()
     json_maker.colour_by_temp = True
+    json_maker.filter_json = True
+    json_maker.process_json()
+    json_maker.write_json()
+
+    # Salinity
+    json_maker = CreateGeojson()
+    json_maker.colour_by_psal= True
     json_maker.filter_json = True
     json_maker.process_json()
     json_maker.write_json()

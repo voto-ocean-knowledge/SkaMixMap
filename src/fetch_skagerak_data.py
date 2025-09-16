@@ -42,6 +42,7 @@ def skagerak_download_data(records=100, return_df=True, remove_cached=True):
     df_combi = df_combi[~np.isnan(df_combi.lon)]
     df_combi = df_combi[['datetime', 'fb_quality', 'fb_pressure', 'fb_flow', 'watertemp', 'salinity', 'sndspeed', 'ph', 'oxygen', 'saturation', 'chlorophyll', 'phycocyanin', 'turbidity', 'lat', 'lon']]
     df_combi = df_combi.rename({'watertemp': 'TEMP',
+                                'salinity': 'PSAL',
                     }, axis=1)
     df_combi.to_csv(skagerak_raw_csv, index=False)
     if remove_cached:
