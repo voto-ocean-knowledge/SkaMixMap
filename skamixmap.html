@@ -32,7 +32,6 @@
 				<h1> SkaMix operational map</h1>
                <p>This map displays the near real time locations of vessels and autonomous platforms during the SkaMix project. For now, it updates every 10 minutes.  More improvements to come soon!</p>
                 <p>🔍 <b>Instructions:</b> click on the map for a lon-lat popup. Use the layers icon in the top right to select satellite imagery etc. Use the compass icon to measure distances and bearings. Zoom and full screen toggles are in the top left corner.<br>👋<b>New!</b> Select layer "SST from platforms" to see the last 3 days of SST from platforms in the field
-		<br>💔 <b>Currently broken (2025-09-15 12:00): </b> Nothing I'm aware of! email bugs to: <a href = "mailto: callum.rollo@voiceoftheocean.org">callum.rollo@voiceoftheocean.org</a></p>
 	</div>
 		<div class="col-md-2">
 		</div>
@@ -41,7 +40,6 @@
 		</div>
 
         <div class="row">
-            <div class="col-md-8 ">
 
 
 <div id="map" style="height: 600px"></div>
@@ -270,14 +268,6 @@ L.control.ruler().addTo(map);
 </script>
 
 
-            </div>
-            <div class="col-md-4">
-		<p id="clock"></p>
-				Time since last page refresh: <b><p style="color:Tomato;" id="demo"></p></b>
-				<h3>Time since last location update</h3>
-				<p>Refresh to update!</p>
-				<p id="time_info"></p>
-            </div>
         </div>
     </div>
 
@@ -285,29 +275,6 @@ L.control.ruler().addTo(map);
 	<br>
 	<img src="/static/skamix/colorbars1.png" class="img-fluid" alt="Colorbars of satellite products">
 
-	<script>
-		document.getElementById("time_info").innerHTML = platform_times_info;
-		const utcDateString = new Date().toISOString();
-		document.getElementById("clock").innerHTML = " Time at last refresh (UTC): " + utcDateString;
-var countDownDate = new Date();
-
-// Update the count down every 1 second
-var x = setInterval(function() {
-
-  var now = new Date().getTime();
-  var distance = now - countDownDate;
-
-  // Time calculations for days, hours, minutes and seconds
-  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-  // Display the result in the element with id="demo"
-  document.getElementById("demo").innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
-
-}, 1000);
-</script>
 
 <h3>Data sources 📋</h3>
 <ul>
