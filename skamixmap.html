@@ -31,7 +31,8 @@
 	<div class="col-md-8">
 				<h1> {{title}}</h1>
                <p>This map displays the near real time locations of vessels and autonomous platforms during the SkaMix project. For now, it updates every 10 minutes.  More improvements to come soon!</p>
-                <p>🔍 <b>Instructions:</b> click on the map for a lon-lat popup. Use the layers icon in the top right to select satellite imagery etc. Use the compass icon to measure distances and bearings. Zoom and full screen toggles are in the top left corner.<br>👋<b>New!</b> Select layer "SST from platforms" to see the last 3 days of SST from platforms in the field
+                <p>🔍 <b>Instructions:</b> click on the map for a lon-lat popup. Use the layers icon in the top right to select satellite imagery etc. Use the compass icon to measure distances and bearings. Zoom and full screen toggles are in the top left corner.<br>
+					👋<b>New!</b> You can find EMODnet wirewalker-friendly depths and FTLE layers at the bottom of the layers list
 	</div>
 		<div class="col-md-2">
 		</div>
@@ -252,6 +253,20 @@ overlayMaps["Platforms"] = platforms;
 overlayMaps["Platforms (full tracks)"] = platforms_full;
 overlayMaps["SST from platforms"] = platforms_temperature;
 overlayMaps["SSS from platforms"] = platforms_salinity;
+
+{% if isobaths%}
+var depth200 = JSON.parse('{{ isobath_dict["depth_200_m"] | tojson | safe}}');
+overlayMaps["<span style='color: red'>EMODnet depth > 200 m</span>"] = L.geoJSON(depth200, {
+	attribution: "EMODnet",
+	 color:'red',
+})
+var ftleTemp = JSON.parse('{{ ftle_temp | tojson | safe}}');
+overlayMaps["<span style='color: orange'>FTLE temp grad > 0.0002 2026-03-29 </span>"] = L.geoJSON(ftleTemp, {
+	attribution: "Torben Arne Voß",
+	 color:'orange',
+})
+{% endif %}
+
 
 var controlPanel = L.control.layers(baseMaps, overlayMaps).addTo(map);
 map.addControl(new L.Control.ScaleNautic({
