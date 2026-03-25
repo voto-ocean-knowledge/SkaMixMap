@@ -11,16 +11,12 @@ import cmocean.cm as cmo
 _log = logging.getLogger(__name__)
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, folder)
-from user_variables import user_dict
 data_dir = Path(folder) / 'data'
 loc_dir = data_dir / "processed_location_data"
-json_dir = Path(folder)  / "static" / "skamix" / "json"
-if not json_dir.exists():
-    json_dir.mkdir(parents=True)
 
 features_list = []
 
-def write_geojson(features, filename, var_name = "platform_locations"):
+def write_geojson(features, filename, json_dir, var_name = "platform_locations"):
     # Write out geojson to file with the syntax to make it importable in javascript. Ugly but functional
     file_out = json_dir / filename
     geojson_dict =  {
@@ -80,7 +76,7 @@ def locations_to_geojson_point(df, popup):
     return point_dict
 
 
-def colour_geojson_points(df, platform, color_by="TEMP"):
+def colour_geojson_points(df, platform, user_dict, color_by="TEMP"):
     platform_name = platform.split('csv')[0]
     if color_by not in list(df):
         return []
@@ -129,27 +125,33 @@ def colour_geojson_points(df, platform, color_by="TEMP"):
 
 class CreateGeojson:
     def __init__(self):
-        self.user_dict = user_dict
+        self.user_dict = None
         self.json_features_list = []
         self.outfile = "all_platform_locations.js"
         self.filter_json = False
         self.colour_by_temp = False
         self.colour_by_psal = False
+        self.json_dir = ""
 
     def process_json(self):
+        if self.filter_json:
+            self.outfile = "platform_locations.js"
+        if self.colour_by_temp:
+            self.outfile = self.outfile.replace('locations', 'temperature')
+        elif self.colour_by_psal:
+            self.outfile = self.outfile.replace('locations', 'salinity')
         for csv in loc_dir.glob("*.csv"):
             fn = csv.name
             df = pd.read_csv(csv, parse_dates=['datetime'])
 
             if self.filter_json:
-                if 'platforms_time_filter' in user_dict.keys():
-                    start = user_dict["platforms_time_filter"]['start']
-                    end = user_dict["platforms_time_filter"]['end']
+                if 'platforms_time_filter' in self.user_dict.keys():
+                    start = self.user_dict["platforms_time_filter"]['start']
+                    end = self.user_dict["platforms_time_filter"]['end']
                 else:
                     end = str(datetime.datetime.now())
                     start = str(datetime.datetime.now() - datetime.timedelta(days=3))
                 df = time_filter(df, start, end)
-                self.outfile = "platform_locations.js"
             if df.empty:
                 continue
 
@@ -159,8 +161,12 @@ class CreateGeojson:
             }
             timestamp = str(df['datetime'].values[-1])[:19]
             if "heincke" in fn:
-                line_popup =  f"<a href='https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html'>R/V Heincke</a>"
+                line_popup = f"<a href='https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html'>R/V Heincke</a>"
                 point_popup = f"<a href='https://www.awi.de/en/fleet-stations/research-vessel-and-cutter/research-vessel-heincke.html'>R/V Heincke</a><br>location at <br>{timestamp}"
+                line_style["color"] = "white"
+            elif "emb" in fn:
+                line_popup =  f"<a href='https://briese-research.de/research-department/research-vessels/rv-elisabeth-mann-borgese'>R/V Elisabeth Mann Borgese</a>"
+                point_popup = f"<a href='https://briese-research.de/research-department/research-vessels/rv-elisabeth-mann-borgese'>R/V R/V Elisabeth Mann Borgese</a><br>location at <br>{timestamp}"
                 line_style["color"] = "white"
             elif "skagerak" in fn:
                 line_popup = f"<a href='https://www.gu.se/en/skagerak'>R/V Skagerak</a>"
@@ -186,12 +192,11 @@ class CreateGeojson:
                 _log.warning(f"unknown data source {csv}. Skipping")
                 continue
             if self.colour_by_temp:
-                coloured_points = colour_geojson_points(df, fn)
+                coloured_points = colour_geojson_points(df, fn, self.user_dict)
                 self.json_features_list += coloured_points
-                self.outfile = self.outfile.replace('locations', 'temperature')
                 continue
             elif self.colour_by_psal:
-                coloured_points = colour_geojson_points(df, fn, color_by="PSAL")
+                coloured_points = colour_geojson_points(df, fn, self.user_dict, color_by="PSAL")
                 self.json_features_list += coloured_points
                 self.outfile = self.outfile.replace('locations', 'salinity')
                 continue
@@ -201,11 +206,11 @@ class CreateGeojson:
             self.json_features_list.append(point_dict)
 
     def write_json(self):
-        write_geojson(self.json_features_list, self.outfile, var_name = self.outfile.split('.')[0])
+        write_geojson(self.json_features_list, self.outfile, self.json_dir, var_name = self.outfile.split('.')[0])
 
 
 
-def create_info_string():
+def create_info_string(json_dir):
     info_string = "<h3>Age of platform location data</h3><ul>"
     for csv in loc_dir.glob("*.csv"):
         fn = csv.name.split('.')[0]
@@ -238,10 +243,17 @@ def create_info_string():
         fout.write(f"var platform_times_info = '{info_string}';\n")
 
 
-def main():
-    create_info_string()
+def main(skamix_dir = "skamix"):
+    from user_variables import user_dicts
+    user_dict = user_dicts[skamix_dir]
+    json_dir = Path(folder) / "static" / skamix_dir / "json"
+    if not json_dir.exists():
+        json_dir.mkdir(parents=True)
+    create_info_string(json_dir)
     # Temperature
     json_maker = CreateGeojson()
+    json_maker.json_dir = json_dir
+    json_maker.user_dict = user_dict
     json_maker.colour_by_temp = True
     json_maker.filter_json = True
     json_maker.process_json()
@@ -249,20 +261,26 @@ def main():
 
     # Salinity
     json_maker = CreateGeojson()
+    json_maker.json_dir = json_dir
+    json_maker.user_dict = user_dict
     json_maker.colour_by_psal= True
     json_maker.filter_json = True
     json_maker.process_json()
     json_maker.write_json()
 
     json_maker = CreateGeojson()
+    json_maker.json_dir = json_dir
+    json_maker.user_dict = user_dict
     json_maker.process_json()
     json_maker.write_json()
 
     json_maker = CreateGeojson()
+    json_maker.json_dir = json_dir
+    json_maker.user_dict = user_dict
     json_maker.filter_json = True
     json_maker.process_json()
     json_maker.write_json()
 
 
 if __name__ == '__main__':
-    main()
+    main(skamix_dir="skamix2")

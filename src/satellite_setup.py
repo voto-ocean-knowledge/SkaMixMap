@@ -10,17 +10,15 @@ import cmocean.cm as cmo
 _log = logging.getLogger(__name__)
 
 root_dir = Path(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from user_variables import user_dict
+from user_variables import user_dicts
 
-manual_limits = user_dict['colorbar_limits']
-
-satellite_settings = root_dir / "static" / "skamix" / "satellite.js"
 satellite_html = root_dir / "index.html"
 
-def get_satellite_settings():
-    satellite_dicts = {'sst_l4': {
-        'url': 'https://wmts.marine.copernicus.eu/teroWmts/SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/DMI-BALTIC-SST-L4-NRT-OBS_FULL_TIME_SERIE',
-        'var_name': 'analysed_sst'},            
+def get_satellite_settings(user_dict):
+    satellite_dicts = {
+        'sst_l4': {
+        'url': 'https://wmts.marine.copernicus.eu/teroWmts/SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/DMI-BALTIC-SST-L4-NRT-OBS_FULL_TIME_SERIE_202511',
+        'var_name': 'analysed_sst'},
         'sst_l3': {
         'url': 'https://wmts.marine.copernicus.eu/teroWmts/SST_ATL_PHY_L3S_NRT_010_037/cmems_obs-sst_atl_phy_nrt_l3s_P1D-m_202211',
         'var_name': 'sea_surface_temperature'},
@@ -31,13 +29,13 @@ def get_satellite_settings():
         'url': 'https://wmts.marine.copernicus.eu/teroWmts/SEALEVEL_EUR_PHY_L4_NRT_008_060/cmems_obs-sl_eur_phy-ssh_nrt_allsat-l4-duacs-0.0625deg_P1D_202506',
         'var_name': 'adt'},
         'chl_l4': {
-            'url': 'https://wmts.marine.copernicus.eu/teroWmts/OCEANCOLOUR_ATL_BGC_L4_NRT_009_116/cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D_202311',
+            'url': 'https://wmts.marine.copernicus.eu/teroWmts/OCEANCOLOUR_ATL_BGC_L4_NRT_009_116/cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D_202511',
             'var_name': 'CHL'},
         'sst_forecast_baltic': {
             'url': 'https://wmts.marine.copernicus.eu/teroWmts/BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411',
             'var_name': 'thetao'},
         'sst_forecast': {
-            'url': 'https://wmts.marine.copernicus.eu/teroWmts/NWSHELF_ANALYSISFORECAST_PHY_004_013/cmems_mod_nws_phy_anfc_0.027deg-2D_PT1H-m_202411',
+            'url': 'https://wmts.marine.copernicus.eu/teroWmts/NWSHELF_ANALYSISFORECAST_PHY_004_013/cmems_mod_nws_phy-sst_anfc_1.5km-2D_PT1H-i_202511',
             'var_name': 'thetao'},
         'sss_forecast': {
             'url': 'https://wmts.marine.copernicus.eu/teroWmts/BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411',
@@ -48,6 +46,8 @@ def get_satellite_settings():
         req = requests.get(f"{sat_dict['url']}?request=GetCapabilities&service=WMS")
         wms = xmltodict.parse(req.text)
         for cap_dict in wms['Capabilities']['Contents']['Layer']:
+            if type(cap_dict) is not dict:
+                continue
             if sat_dict['var_name'] == cap_dict['ows:Identifier'].split('/')[-1]:
                 layer_dict = cap_dict
         sat_dict['title'] = layer_dict['ows:Title']
@@ -83,7 +83,7 @@ def get_satellite_settings():
         sat_dict['layer_dict'] = layer_dict
     return satellite_dicts
 
-def write_satellite_settings(ddict):
+def write_satellite_settings(ddict, satellite_settings, manual_limits):
     with open(satellite_settings, "w") as fout:
         for key, var in ddict.items():
             fout.write(f"var {key}_time = '{var['layer_datetime']}';\n")
@@ -99,7 +99,7 @@ def write_satellite_settings(ddict):
 
 
 
-def write_graticule_settings():
+def write_graticule_settings(satellite_settings):
     with open(satellite_settings, "a") as fout:
         levels = range(4, 15)
         initial_lat_spacing = 8
@@ -132,7 +132,7 @@ def write_sat_to_html(ddict):
         contents = "".join(contents)
         f.write(contents)
 
-def make_color_bars(ddict):
+def make_color_bars(ddict, skamix_dir, manual_limits):
     fig, ax = plt.subplots()
     step = 0
     i = 0
@@ -177,15 +177,18 @@ def make_color_bars(ddict):
     cbar_ax = fig.add_axes([0.15 + cbar_col, 0.25 - 0.18 * step, 1, 0.08])
     plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label='Norwegian SSS forecast')
     ax.remove()
-    plt.savefig(root_dir / "static" / "skamix"/ "colorbars1.png", bbox_inches="tight", transparent=True)
+    plt.savefig(root_dir / "static" / skamix_dir / "colorbars1.png", bbox_inches="tight", transparent=True)
 
 
-def main():
-    sat_dicts = get_satellite_settings()
-    write_satellite_settings(sat_dicts)
+def main(skamix_dir='skamix'):
+    user_dict = user_dicts[skamix_dir]
+    manual_limits = user_dict['colorbar_limits']
+    satellite_settings = root_dir / "static" / skamix_dir / "satellite.js"
+    sat_dicts = get_satellite_settings(user_dict)
+    write_satellite_settings(sat_dicts, satellite_settings, manual_limits)
     #write_sat_to_html(sat_dicts)
-    make_color_bars(sat_dicts)
-    write_graticule_settings()
+    make_color_bars(sat_dicts, skamix_dir, manual_limits)
+    write_graticule_settings(satellite_settings)
 
 
 if __name__ == '__main__':

@@ -66,6 +66,10 @@ def extract_loc_from_sbd(fn):
         lon = float(lat_lon_parts[2])
         year = datetime.datetime.now().year
         dt = datetime.datetime(year, int(date_str[:2]), int(date_str[2:4]), int(date_str[4:6]), int(date_str[6:8]))
+        if dt > datetime.datetime.now():
+            year-=1
+            dt = datetime.datetime(year, int(date_str[:2]), int(date_str[2:4]), int(date_str[4:6]), int(date_str[6:8]))
+
     except:
         _log.error(f"failed to parse {fn} contents: {line}. Skipping")
         return
