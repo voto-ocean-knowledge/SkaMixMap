@@ -12,6 +12,7 @@ import satellite_setup
 import fetch_heincke_data
 import fetch_skagerak_data
 import fetch_emb_data
+import fetch_garmin_drifter_data
 
 def main():
     skamix_dir = "skamix2"
@@ -41,6 +42,8 @@ def main():
         _log.error(f"Error occurred in skagerak data fetch: {e}")
     fetch_voto_data.main()
     _log.info(f"fetched voto. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
+    fetch_garmin_drifter_data.main()
+    _log.info(f"fetched garmin drifters. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
     make_demo_geojson.main(skamix_dir=skamix_dir)
     _log.info(f"made demo geojson. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
     satellite_setup.main(skamix_dir=skamix_dir)
