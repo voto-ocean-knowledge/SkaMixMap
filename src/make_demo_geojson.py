@@ -166,7 +166,7 @@ class CreateGeojson:
                 line_style["color"] = "white"
             elif "emb" in fn:
                 line_popup =  f"<a href='https://briese-research.de/research-department/research-vessels/rv-elisabeth-mann-borgese'>R/V Elisabeth Mann Borgese</a>"
-                point_popup = f"<a href='https://briese-research.de/research-department/research-vessels/rv-elisabeth-mann-borgese'>R/V R/V Elisabeth Mann Borgese</a><br>location at <br>{timestamp}"
+                point_popup = f"<a href='https://briese-research.de/research-department/research-vessels/rv-elisabeth-mann-borgese'>R/V Elisabeth Mann Borgese</a><br>location at <br>{timestamp}"
                 line_style["color"] = "white"
             elif "skagerak" in fn:
                 line_popup = f"<a href='https://www.gu.se/en/skagerak'>R/V Skagerak</a>"
@@ -188,6 +188,10 @@ class CreateGeojson:
                 unit_id = fn.split('_')[1][:-4]
                 line_popup = f"unit {unit_id}"
                 point_popup =  f"unit {unit_id}<br>location at <br>{timestamp}"
+            elif "drifter_" in fn:
+                drifter_name =  fn.split('.')[0].replace('drifter_', '')
+                line_popup = f"unit {drifter_name}"
+                point_popup = f"unit {drifter_name}<br>location at <br>{timestamp}"
             else:
                 _log.warning(f"unknown data source {csv}. Skipping")
                 continue
