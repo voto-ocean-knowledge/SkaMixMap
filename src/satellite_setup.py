@@ -31,15 +31,9 @@ def get_satellite_settings(user_dict):
         'chl_l4': {
             'url': 'https://wmts.marine.copernicus.eu/teroWmts/OCEANCOLOUR_ATL_BGC_L4_NRT_009_116/cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D_202511',
             'var_name': 'CHL'},
-        'sst_forecast_baltic': {
-            'url': 'https://wmts.marine.copernicus.eu/teroWmts/BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411',
-            'var_name': 'thetao'},
         'sst_forecast': {
             'url': 'https://wmts.marine.copernicus.eu/teroWmts/NWSHELF_ANALYSISFORECAST_PHY_004_013/cmems_mod_nws_phy-sst_anfc_1.5km-2D_PT1H-i_202511',
             'var_name': 'thetao'},
-        'sss_forecast': {
-            'url': 'https://wmts.marine.copernicus.eu/teroWmts/BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411',
-            'var_name': 'so'},
     }
    # if 'analysed_sst' in ddict['ows:Identifier'] or 'sea_surface_temperature' in ddict['ows:Identifier']:
     for layer_name, sat_dict in satellite_dicts.items():
@@ -166,13 +160,13 @@ def make_color_bars(ddict, skamix_dir, manual_limits):
         plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label=label)
     i += 1
     step += 1
-    x = np.linspace(15, 18, 100)[np.newaxis, :]
+    x = np.linspace(2, 8, 100)[np.newaxis, :]
     mappable = ax.imshow(x, aspect='auto', cmap='rainbow')
     cbar_ax = fig.add_axes([0.15 + cbar_col, 0.25 - 0.18 * step, 1, 0.08])
     plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label='Norwegian SST forecast')
     i += 1
     step += 1
-    x = np.linspace(15, 35, 100)[np.newaxis, :]
+    x = np.linspace(15, 38, 100)[np.newaxis, :]
     mappable = ax.imshow(x, aspect='auto', cmap='rainbow')
     cbar_ax = fig.add_axes([0.15 + cbar_col, 0.25 - 0.18 * step, 1, 0.08])
     plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label='Norwegian SSS forecast')

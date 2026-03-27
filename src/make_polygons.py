@@ -11,7 +11,7 @@ path_to_emodnet = Path("/home/callum/Documents/datasets/bathy/emodet_2024/D5_202
 
 
 
-def bathy_to_geojson(extent=[57, 59, 8, 12], depths=(180, 200, 220), directory=Path("")):
+def bathy_to_geojson(extent=[57.4, 59, 8, 12], depths=(100, 200), directory=Path("")):
     gebco = xr.open_dataset(path_to_emodnet)
     print("Subsettting emodnet data")
     ds = gebco.sel(lon=slice(extent[2], extent[3]), lat=slice(extent[0], extent[1]))
@@ -20,9 +20,14 @@ def bathy_to_geojson(extent=[57, 59, 8, 12], depths=(180, 200, 220), directory=P
     topo =  - ds.elevation
     for depth in depths:
         print(str(directory) + "depth " + str(depth))
-        # create single contour level plot
+        # create single contour level plot. Hack to force closers of polygons
+        edit = topo.copy()
+        edit[0, :] = depth - 1
+        edit[-1, :] = depth - 1
+        edit[:, 0] = depth - 1
+        edit[:, -1] = depth - 1
         fig, ax = plt.subplots()
-        cs = ax.contour(lon, lat, topo, [depth])
+        cs = ax.contour(lon, lat, edit, [depth])
         shapes = cs.allsegs[0]
         lines = []
         print("extracting geometries")
@@ -43,8 +48,45 @@ def bathy_to_geojson(extent=[57, 59, 8, 12], depths=(180, 200, 220), directory=P
         with open(isobaths_dir/ (str(abs(depth)) + 'm.json'), 'w', encoding='utf-8') as f:
             json.dump(geo_json, f)
 
+color_dict = ['yellow', 'orange', 'red']
+
+
 def ftle_grad_to_polygons(directory):
     ds = xr.open_dataset("/home/callum/Downloads/ftle_data.nc")
+    var_name = 'ftle'
+    min_time = ds.time.min()
+    lines = []
+    for i, threshold in enumerate([2e-5, 4e-5, 6e-5]):
+        variable = ds[var_name].loc[min_time]
+        var_copy = variable.copy()
+
+        var_copy = var_copy.fillna(0)
+        fig, ax = plt.subplots()
+        cs = ax.contour(ds.lon, ds.lat, var_copy, [threshold])
+        shapes = cs.allsegs[0]
+        for v in shapes:
+            if len(v) < 4:
+                # Trying to write less than 4 points to a polygon fails, skip these
+                continue
+            popup = f"{var_name} > {threshold} {str(min_time.values)[:13]}"
+            coords = [[point[0], point[1]] for point in v]
+
+            polygon = {
+                "geometry": {"type": "Polygon", "coordinates": [coords]},
+                "type": "Feature",
+                "properties": {
+                    "popupContent": popup,
+                    "color": color_dict[i],
+                },
+            }
+            lines.append(polygon)
+    poly_dict = {"type": "FeatureCollection", "features": lines}
+
+    if not directory.exists():
+        directory.mkdir(parents=True)
+    with open(directory /  f'{var_name}.json', 'w', encoding='utf-8') as f:
+        json.dump(poly_dict, f)
+
     threshold = 0.0002
     ds.temp_grad[-1, :, :].plot()
     fig, ax = plt.subplots()
@@ -71,4 +113,4 @@ def ftle_grad_to_polygons(directory):
 if __name__ == '__main__':
     out_dir = data_dir = Path(folder) / 'static' / 'skamix2' / 'json'
     ftle_grad_to_polygons(out_dir / 'ftle')
-    bathy_to_geojson(directory=out_dir)
+    #bathy_to_geojson(directory=out_dir)

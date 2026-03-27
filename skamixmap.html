@@ -81,7 +81,7 @@ standard['noWrap'] = true;
 standard['attribution'] = '© <a href="https://help.marine.copernicus.eu/en/articles/4444611-how-to-cite-copernicus-marine-products-and-services">Copernicus CMEMS</a>';
 
 var sst_l4 = L.tileLayer(template_sst, {
-  layer: 'SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/DMI-BALTIC-SST-L4-NRT-OBS_FULL_TIME_SERIE_202511',
+  layer: 'SST_BAL_SST_L4_NRT_OBSERVATIONS_010_007_b/DMI-BALTIC-SST-L4-NRT-OBS_FULL_TIME_SERIE_202511/analysed_sst',
   time: sst_l4_time,
   ...standard
 }).addTo(map);
@@ -182,14 +182,13 @@ overlayMaps[ "CHL L4 " + chl_l4_time.substr(0, 10)] = chl_l4;
 let len_nor = sst_forecast_times.length;
 for (let i = 0; i < len_nor; i++) {
 	thisTime = sst_forecast_times[i]
-
-	overlayMaps[ "SST Norwegian Forecast " + thisTime.substr(0, 10)] = L.tileLayer.wms('https://thredds.met.no/thredds/wms/fou-hi/norkystv3_800m_m61_be?', {
+	overlayMaps[ "SST Norwegian Forecast " + thisTime.substr(0, 10)] = L.tileLayer.wms('https://thredds.met.no/thredds/wms/fou-hi/norkystv3_800m_m00_be?', {
 	layers: 'temperature',
 	'version': '1.3.0',
 	'format': 'image/png',
 	'transparent': 'true',
 	'STYLES': 'boxfill%2Frainbow',
-	'COLORSCALERANGE': '15%2C18',
+	'COLORSCALERANGE': '2%2C8',
 	'NUMCOLORBANDS': 200,
 	'time': thisTime,
 	attribution: 'Norwegian Meteorological Institute'})
@@ -200,13 +199,13 @@ let len_nor_sal = sst_forecast_times.length;
 for (let i = 0; i < len_nor_sal; i++) {
 	thisTime = sst_forecast_times[i]
 
-	overlayMaps[ "SSS Norwegian Forecast " + thisTime.substr(0, 10)] = L.tileLayer.wms('https://thredds.met.no/thredds/wms/fou-hi/norkystv3_800m_m61_be?', {
+	overlayMaps[ "SSS Norwegian Forecast " + thisTime.substr(0, 10)] = L.tileLayer.wms('https://thredds.met.no/thredds/wms/fou-hi/norkystv3_800m_m00_be?', {
 	layers: 'salinity',
 	'version': '1.3.0',
 	'format': 'image/png',
 	'transparent': 'true',
 	'STYLES': 'boxfill%2Frainbow',
-	'COLORSCALERANGE': '15%2C35',
+	'COLORSCALERANGE': '15%2C38',
 	'NUMCOLORBANDS': 200,
 	'time': thisTime,
 	attribution: 'Norwegian Meteorological Institute'})
@@ -215,39 +214,6 @@ for (let i = 0; i < len_nor_sal; i++) {
 
 
 
-var template_sst_fore = template + '&STYLE=cmap:thermal,range:' + sst_forecast_min + '/' + sst_forecast_max
-let len = sst_forecast_times.length;
-for (let i = 0; i < len; i++) {
-	thisTime = sst_forecast_times[i]
-	overlayMaps[ "SST North Sea forecast " + thisTime.substr(0, 10)] =  L.tileLayer(template_sst_fore, {
-	  layer: 'NWSHELF_ANALYSISFORECAST_PHY_004_013/cmems_mod_nws_phy-sst_anfc_1.5km-2D_PT1H-i_202511/thetao',
-	  time: thisTime,
-	  ...standard
-	});
-}
-
-var template_sst_fore = template + '&STYLE=cmap:thermal,range:' + sst_forecast_min + '/' + sst_forecast_max
-let lenBaltic = sst_forecast_times.length;
-for (let i = 0; i < lenBaltic; i++) {
-	thisTime = sst_forecast_times[i]
-	overlayMaps[ "SST Baltic forecast " + thisTime.substr(0, 10)] =  L.tileLayer(template_sst_fore, {
-	  layer: 'BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411/thetao',
-	  time: thisTime,
-	  ...standard
-	});
-}
-
-var template_sss_fore = template + '&STYLE=cmap:haline,range:' + sss_forecast_min + '/' + sss_forecast_max
-let lenSal = sss_forecast_times.length;
-for (let i = 0; i < lenSal; i++) {
-	thisTime = sss_forecast_times[i]
-	overlayMaps[ "SSS forecast " + thisTime.substr(0, 10)] =  L.tileLayer(template_sss_fore, {
-	  layer: 'BALTICSEA_ANALYSISFORECAST_PHY_003_006/cmems_mod_bal_phy_anfc_P1D-m_202411/so',
-	  time: thisTime,
-	  ...standard
-	});
-}
-
 overlayMaps["Graticule"] = graticule;
 overlayMaps["Platforms"] = platforms;
 overlayMaps["Platforms (full tracks)"] = platforms_full;
@@ -255,16 +221,25 @@ overlayMaps["SST from platforms"] = platforms_temperature;
 overlayMaps["SSS from platforms"] = platforms_salinity;
 
 {% if isobaths%}
-var depth200 = JSON.parse('{{ isobath_dict["depth_200_m"] | tojson | safe}}');
-overlayMaps["<span style='color: red'>EMODnet depth > 200 m</span>"] = L.geoJSON(depth200, {
+var depth100 = JSON.parse('{{ isobath_dict["depth_100_m"] | tojson | safe}}');
+overlayMaps["<span style='color: red'>EMODnet depth > 100 m</span>"] = L.geoJSON(depth100, {
 	attribution: "EMODnet",
 	 color:'red',
 })
-var ftleTemp = JSON.parse('{{ ftle_temp | tojson | safe}}');
-overlayMaps["<span style='color: orange'>FTLE temp grad > 0.0002 2026-03-29 </span>"] = L.geoJSON(ftleTemp, {
-	attribution: "Torben Arne Voß",
-	 color:'orange',
-})
+
+function popupText(feature, layer) {
+	layer.bindPopup(feature.properties.popupContent);}
+
+function setStyle(feature) {
+  return {
+    fillColor: feature.properties.color,
+    color: feature.properties.color
+  };
+}
+
+var ftle = JSON.parse('{{ ftle | tojson | safe}}');
+
+overlayMaps["<span style='color: orange'>FTLE </span>"] = L.geoJson(ftle, {attribution: "Torben Arne Voß", style: setStyle, onEachFeature: popupText})
 {% endif %}
 
 
@@ -327,7 +302,7 @@ var x = setInterval(function() {
 
 	<div class="row">
 	<br>
-	<img src="/static/skamix/colorbars1.png" class="img-fluid" alt="Colorbars of satellite products">
+	<img src="/static/{{skamixdir}}/colorbars1.png" class="img-fluid" alt="Colorbars of satellite products">
 
 
 <h3>Data sources 📋</h3>

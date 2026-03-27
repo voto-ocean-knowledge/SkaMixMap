@@ -29,15 +29,11 @@ user_dicts = {
         {
             "colorbar_limits" : {
                 "sst": {'min': degrees_to_Kelvin(0),
-                        'max': degrees_to_Kelvin(18)},
+                        'max': degrees_to_Kelvin(10)},
                 "sst_forecast": {'min': 0,
-                                 'max': 18},
-                "sst_forecast_baltic": {'min': 0,
-                                        'max': 18},
+                                 'max': 10},
                 "sss_forecast": {'min': 15,
                                  'max': 35},
-                "cdo_forecast": {'min': 0,
-                                 'max': 10},
             },
             # "forecast_product_date": "2025-08-03",
             # "satellite_product_date": "2025-07-29"
