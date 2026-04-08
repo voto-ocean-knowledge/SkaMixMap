@@ -63,12 +63,12 @@ def ftle_grad_to_polygons(directory):
     if not directory.exists():
         directory.mkdir(parents=True)
     ftle_vars_dict = {
-        'temp_grad': {'var_name': 'temp_grad',
-                     'thresholds': [1e-4, 2e-4, 3e-4],
+        'mixed_ftle_temp_grad': {'var_name': 'mixed_ftle_temp_grad',
+                     'thresholds': [0.1, 0.2, 0.4],
                       'color_dict': ['#FFA0A0', '#FF5050', '#FF0000'],
                       },
-        'salt_grad': {'var_name': 'salt_grad',
-                      'thresholds': [1e-4, 2e-4, 3e-4],
+        'mixed_ftle_salt_grad': {'var_name': 'mixed_ftle_salt_grad',
+                      'thresholds': [0.1, 0.2, 0.4],
                       'color_dict': ['#A0A0FF', '#5050FF', '#0000FF'],
                       },
         'ftle': {'var_name': 'ftle',
