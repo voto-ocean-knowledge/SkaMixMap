@@ -63,6 +63,10 @@ def ftle_grad_to_polygons(directory):
     if not directory.exists():
         directory.mkdir(parents=True)
     ftle_vars_dict = {
+        'ftle': {'var_name': 'ftle',
+                 'thresholds': [2e-5, 4e-5, 6e-5],
+                 'color_dict': ['#FFFFFF', '#808080', '#000000'],
+                 },
         'mixed_ftle_temp_grad': {'var_name': 'mixed_ftle_temp_grad',
                      'thresholds': [0.1, 0.2, 0.4],
                       'color_dict': ['#FFA0A0', '#FF5050', '#FF0000'],
@@ -71,19 +75,16 @@ def ftle_grad_to_polygons(directory):
                       'thresholds': [0.1, 0.2, 0.4],
                       'color_dict': ['#A0A0FF', '#5050FF', '#0000FF'],
                       },
-        'ftle': {'var_name': 'ftle',
-                 'thresholds': [2e-5, 4e-5, 6e-5],
-                 'color_dict': ['#FFFFFF', '#808080', '#000000'],
-                 },
     }
     ds = xr.open_dataset("/data/temp/ftle.nc")
-    timesteps = pd.date_range("2026-01-01T14:00:00", "2027-01-03T14:00:00")
-    timesteps = timesteps[timesteps > np.datetime64(datetime.datetime.now())][:3]
+    timesteps = pd.date_range("2026-01-01T08:00:00", "2027-01-03T08:00:00")
+    timesteps = timesteps[timesteps > np.datetime64(datetime.datetime.now())][:4]
     for day, timestep in enumerate(timesteps):
         lines = []
         for var_name, var_dict in ftle_vars_dict.items():
             for i, threshold in enumerate(var_dict['thresholds']):
-                variable = ds[var_name].loc[timestep]
+                variable = ds[var_name].sel(time=timestep, method='nearest')
+                actual_time = variable.time.values
                 var_copy = variable.copy()
                 var_copy = var_copy.fillna(0)
                 fig, ax = plt.subplots()
@@ -93,7 +94,7 @@ def ftle_grad_to_polygons(directory):
                     if len(v) < 4:
                         # Trying to write less than 4 points to a polygon fails, skip these
                         continue
-                    popup = f"{var_name} > {threshold}<br>{str(timestep)[:10]}"
+                    popup = f"{var_name} > {threshold}"
                     coords = [[point[0], point[1]] for point in v]
 
                     polygon = {
@@ -102,6 +103,7 @@ def ftle_grad_to_polygons(directory):
                         "properties": {
                             "popupContent": popup,
                             "color": var_dict['color_dict'][i],
+                            "date": str(actual_time)[:19].replace('T', ' '),
                         },
                     }
                     lines.append(polygon)

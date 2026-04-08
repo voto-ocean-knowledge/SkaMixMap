@@ -239,11 +239,13 @@ function setStyle(feature) {
 
 
 var ftle_0 = JSON.parse('{{ ftle["day_0"] | tojson | safe}}');
-overlayMaps["FTLE today 14:00"] = L.geoJson(ftle_0, {attribution: "Torben Arne Voß", style: setStyle, onEachFeature: popupText})
+overlayMaps["FTLE " + ftle_0['features'][0]['properties']['date']] = L.geoJson(ftle_0, {attribution: "Torben Arne Voß", style: setStyle, onEachFeature: popupText})
 var ftle_1 = JSON.parse('{{ ftle["day_1"] | tojson | safe}}');
-overlayMaps["FTLE tomorrow 14:00"] = L.geoJson(ftle_1, {attribution: "Torben Arne Voß", style: setStyle, onEachFeature: popupText})
+overlayMaps["FTLE " + ftle_1['features'][0]['properties']['date']] = L.geoJson(ftle_1, {attribution: "Torben Arne Voß", style: setStyle, onEachFeature: popupText})
 var ftle_2 = JSON.parse('{{ ftle["day_2"] | tojson | safe}}');
-overlayMaps["FTLE day after tomorrow 14:00"] = L.geoJson(ftle_2, {attribution: "Torben Arne Voß", style: setStyle, onEachFeature: popupText})
+overlayMaps["FTLE " + ftle_2['features'][0]['properties']['date']] = L.geoJson(ftle_2, {attribution: "Torben Arne Voß", style: setStyle, onEachFeature: popupText})
+var ftle_3 = JSON.parse('{{ ftle["day_3"] | tojson | safe}}');
+overlayMaps["FTLE " + ftle_3['features'][0]['properties']['date']] = L.geoJson(ftle_3, {attribution: "Torben Arne Voß", style: setStyle, onEachFeature: popupText})
 
 {% endif %}
 
