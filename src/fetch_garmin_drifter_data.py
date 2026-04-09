@@ -11,12 +11,8 @@ root_dir = Path(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 rough_data = root_dir / "data" / "raw_location_data"
 if not rough_data.exists():
     rough_data.mkdir(parents=True)
-heincke_raw_csv = rough_data / "heincke_raw.csv"
 processed_location_data = root_dir / "data" / "processed_location_data"
-heincke_proc_csv = processed_location_data / "heincke.csv"
 
-floats = {'Eddy_2062': 'Eddy 2062 - GA 021',
-          'Bernd':'GA 011-Bernd'}
 
 def fetch_garmin_drifters():
     auth_file = root_dir / 'email_secrets.json'
@@ -44,6 +40,9 @@ def fetch_garmin_drifters():
     df = pd.DataFrame({'float_id': float_id, 'datetime': dt, 'lon': lon, 'lat': lat})
     df['datetime'] = pd.to_datetime(df.datetime)
     df = df.sort_values('datetime')
+    eddys = df[df.float_id.str.contains('Eddy')].float_id.values
+    floats = {eddy.split('-')[0][:-1].replace(' ', '_'):eddy for eddy in eddys}
+    floats['Bernd']  = 'GA 011-Bernd'
     for float_name, float_id in floats.items():
         df_float = df[df.float_id == float_id][['datetime', 'lon', 'lat']]
         if df_float.empty:
@@ -66,7 +65,7 @@ def combine_drifter_data():
             df_full = pd.DataFrame()
         if df.empty:
             _log.info(f"no new data from drifter{drifter_name}")
-            return
+            continue
         _log.info(f"adding {len(df)} rows of new locations from drifter {drifter_name}")
         df_full = pd.concat([df_full, df])
         df_full.to_csv(proc_file, index=False)

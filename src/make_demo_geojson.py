@@ -132,6 +132,7 @@ class CreateGeojson:
         self.colour_by_temp = False
         self.colour_by_psal = False
         self.json_dir = ""
+        self.eddy = False
 
     def process_json(self):
         if self.filter_json:
@@ -140,8 +141,14 @@ class CreateGeojson:
             self.outfile = self.outfile.replace('locations', 'temperature')
         elif self.colour_by_psal:
             self.outfile = self.outfile.replace('locations', 'salinity')
+        if self.eddy:
+            self.outfile = "eddy.js"
         for csv in loc_dir.glob("*.csv"):
             fn = csv.name
+            if self.eddy and 'eddy' not in fn.lower():
+                continue
+            if not self.eddy and 'eddy' in fn.lower():
+                continue
             df = pd.read_csv(csv, parse_dates=['datetime'])
 
             if self.filter_json:
@@ -254,6 +261,7 @@ def main(skamix_dir = "skamix"):
     if not json_dir.exists():
         json_dir.mkdir(parents=True)
     create_info_string(json_dir)
+
     # Temperature
     json_maker = CreateGeojson()
     json_maker.json_dir = json_dir
@@ -272,15 +280,26 @@ def main(skamix_dir = "skamix"):
     json_maker.process_json()
     json_maker.write_json()
 
+    # Full tracks
     json_maker = CreateGeojson()
     json_maker.json_dir = json_dir
     json_maker.user_dict = user_dict
     json_maker.process_json()
     json_maker.write_json()
 
+    # Filtered tracks
     json_maker = CreateGeojson()
     json_maker.json_dir = json_dir
     json_maker.user_dict = user_dict
+    json_maker.filter_json = True
+    json_maker.process_json()
+    json_maker.write_json()
+
+    # Eddy drifters
+    json_maker = CreateGeojson()
+    json_maker.json_dir = json_dir
+    json_maker.user_dict = user_dict
+    json_maker.eddy = True
     json_maker.filter_json = True
     json_maker.process_json()
     json_maker.write_json()

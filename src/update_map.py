@@ -28,20 +28,8 @@ def main():
     _log.info("START")
     fetch_drifter_data.main()
     _log.info(f"fetched drifters. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
-    try:
-        fetch_heincke_data.main()
-    except Exception as e:
-        _log.error(f"Error occurred in Heincke data fetch: {e}")
-    _log.info(f"fetched heincke. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
     fetch_emb_data.main()
     _log.info(f"fetched emb. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
-    try:
-        fetch_skagerak_data.main()
-        _log.info(f"fetched skagerak. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
-    except Exception as e:
-        _log.error(f"Error occurred in skagerak data fetch: {e}")
-    fetch_voto_data.main()
-    _log.info(f"fetched voto. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
     fetch_garmin_drifter_data.main()
     _log.info(f"fetched garmin drifters. Elapsed time: {round(( datetime.datetime.now() - start).total_seconds(), 1)} seconds")
     make_demo_geojson.main(skamix_dir=skamix_dir)

@@ -54,6 +54,7 @@
 		// geojson
         var platform_locations = JSON.parse('{{ platform_locations_json | tojson | safe}}');
         var all_platform_locations = JSON.parse('{{ all_platform_locations_json | tojson | safe}}');
+        var eddy = JSON.parse('{{ eddy_json | tojson | safe}}');
         var platform_temperature = JSON.parse('{{ platform_temperature_json | tojson | safe}}');
         var platform_salinity = JSON.parse('{{ platform_salinity_json | tojson | safe}}');
 
@@ -127,6 +128,13 @@ let platforms = L.geoJSON(platform_locations, {
 		onEachFeature: popupText}).addTo(map);
 
 let platforms_full = L.geoJSON(all_platform_locations, {
+		style(feature) {
+			return feature.properties && feature.properties.style;
+		},
+
+		onEachFeature: popupText})
+
+let eddy_layer = L.geoJSON(eddy, {
 		style(feature) {
 			return feature.properties && feature.properties.style;
 		},
@@ -217,6 +225,7 @@ for (let i = 0; i < len_nor_sal; i++) {
 overlayMaps["Graticule"] = graticule;
 overlayMaps["Platforms"] = platforms;
 overlayMaps["Platforms (full tracks)"] = platforms_full;
+overlayMaps["Eddy floats"] = eddy_layer;
 overlayMaps["SST from platforms"] = platforms_temperature;
 overlayMaps["SSS from platforms"] = platforms_salinity;
 
