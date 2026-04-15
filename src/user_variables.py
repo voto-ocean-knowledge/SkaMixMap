@@ -28,11 +28,11 @@ user_dicts = {
     'skamix2':
         {
             "colorbar_limits" : {
-                "sst": {'min': degrees_to_Kelvin(0),
-                        'max': degrees_to_Kelvin(10)},
-                "sst_forecast": {'min': 0,
-                                 'max': 10},
-                "sss_forecast": {'min': 15,
+                "sst": {'min': degrees_to_Kelvin(4),
+                        'max': degrees_to_Kelvin(7)},
+                "sst_forecast": {'min': 4,
+                                 'max': 36.5},
+                "sss_forecast": {'min': 20,
                                  'max': 35},
             },
             # "forecast_product_date": "2025-08-03",

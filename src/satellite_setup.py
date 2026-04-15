@@ -1,3 +1,4 @@
+import datetime
 import os
 from pathlib import Path
 import logging
@@ -83,7 +84,7 @@ def write_satellite_settings(ddict, satellite_settings, manual_limits):
             fout.write(f"var {key}_time = '{var['layer_datetime']}';\n")
             if 'forecast' in key:
                 # Add the next 3 days of forecast as additional layers
-                ts = pd.to_datetime(var['layer_datetime'])
+                ts = pd.to_datetime(datetime.date.today())
                 out_times = [str(ts + pd.Timedelta(i, "d"))[:10] + "T00:00:00.000Z" for i in range(4)]
                 fout.write(f"var {key}_times = {out_times};\n")
 
@@ -160,13 +161,13 @@ def make_color_bars(ddict, skamix_dir, manual_limits):
         plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label=label)
     i += 1
     step += 1
-    x = np.linspace(2, 8, 100)[np.newaxis, :]
+    x = np.linspace(4, 7, 100)[np.newaxis, :]
     mappable = ax.imshow(x, aspect='auto', cmap='rainbow')
     cbar_ax = fig.add_axes([0.15 + cbar_col, 0.25 - 0.18 * step, 1, 0.08])
     plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label='Norwegian SST forecast')
     i += 1
     step += 1
-    x = np.linspace(15, 38, 100)[np.newaxis, :]
+    x = np.linspace(20, 38, 100)[np.newaxis, :]
     mappable = ax.imshow(x, aspect='auto', cmap='rainbow')
     cbar_ax = fig.add_axes([0.15 + cbar_col, 0.25 - 0.18 * step, 1, 0.08])
     plt.colorbar(cax=cbar_ax, mappable=mappable, orientation='horizontal', label='Norwegian SSS forecast')

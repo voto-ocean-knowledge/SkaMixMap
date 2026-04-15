@@ -196,7 +196,7 @@ for (let i = 0; i < len_nor; i++) {
 	'format': 'image/png',
 	'transparent': 'true',
 	'STYLES': 'boxfill%2Frainbow',
-	'COLORSCALERANGE': '2%2C8',
+	'COLORSCALERANGE': '4%2C7',
 	'NUMCOLORBANDS': 200,
 	'time': thisTime,
 	attribution: 'Norwegian Meteorological Institute'})
@@ -213,7 +213,7 @@ for (let i = 0; i < len_nor_sal; i++) {
 	'format': 'image/png',
 	'transparent': 'true',
 	'STYLES': 'boxfill%2Frainbow',
-	'COLORSCALERANGE': '15%2C38',
+	'COLORSCALERANGE': '20%2C38',
 	'NUMCOLORBANDS': 200,
 	'time': thisTime,
 	attribution: 'Norwegian Meteorological Institute'})
@@ -231,9 +231,9 @@ overlayMaps["SSS from platforms"] = platforms_salinity;
 
 {% if isobaths%}
 var depth100 = JSON.parse('{{ isobath_dict["depth_100_m"] | tojson | safe}}');
-overlayMaps["<span style='color: red'>EMODnet depth > 100 m</span>"] = L.geoJSON(depth100, {
+overlayMaps["<span>EMODnet depth > 100 m</span>"] = L.geoJSON(depth100, {
 	attribution: "EMODnet",
-	 color:'red',
+	 color:'white',
 })
 
 function popupText(feature, layer) {
