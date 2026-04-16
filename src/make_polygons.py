@@ -10,6 +10,7 @@ import json
 from shapely.geometry import Polygon
 import geopandas as gpd
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+from make_demo_geojson import lon_lat_to_coords, data_dir
 
 path_to_emodnet = Path("/data/temp/D5_2024.nc")
 
@@ -113,9 +114,54 @@ def ftle_grad_to_polygons(directory):
         with open(directory /  f'ftle_{day}.json', 'w', encoding='utf-8') as f:
             json.dump(poly_dict, f)
 
+def locations_to_geojson_points(df):
+    dict_list = []
+    color_dict = {'Norway': '#00205B',
+                  'Sweden': '#FECC02',
+                  'Denmark': '#C8102E'}
+    for i, row in df.iterrows():
+        point_dict = {
+            "type": "Feature",
+            "properties": {
+                "popupContent": row.Country,
+                "color": color_dict[row.Country]
+            },
+            "geometry": {"type": "Point", "coordinates": [row.lon, row.lat]
+                         }
+        }
+        dict_list.append(point_dict)
+    return dict_list
+
+def sampling_geometry(json_dir):
+    df = pd.read_csv(data_dir / 'approved_points.txt', sep='  ', engine='python').rename({'Longitude': 'lon', 'Latitude': 'lat'}, axis=1)
+    subset = [24, 23, 22, 14, 15, 12, 11, 6, 5, 4, 28, 36, 37, 44, 29, 45, 53, 54, 55, 52, 46, 65, 47, 30, 32, 64, 63,
+              62, 61, 34, 60, 59, 58, 56, 57, 33, 71, 70, 69, 68, 67, 77, 76, 75, 86, 87, 88, 92, 91, 94, 19,
+              20, 24]
+    df_sub = pd.DataFrame([df.loc[i, :] for i in subset])
+
+    features = locations_to_geojson_points(df)
+    coords = lon_lat_to_coords(df_sub.lon, df_sub.lat)
+    polygon = {
+        "geometry": {"type": "Polygon", "coordinates": [coords]},
+        "type": "Feature",
+        "properties": {
+            "popupContent": "Area of interest",
+        },
+    }
+    features.append(polygon)
+    features = features[::-1]
+    file_out = json_dir / 'sampling.json'
+    geojson_dict =  {
+        "type": "FeatureCollection",
+        "features": features
+    }
+
+    with open(file_out, "w", encoding='utf8') as fout:
+        json.dump(geojson_dict, fout,  ensure_ascii=False)
 
 if __name__ == '__main__':
-    out_dir = data_dir = Path(folder) / 'static' / 'skamix2' / 'json'
+    out_dir  = Path(folder) / 'static' / 'skamix2' / 'json'
     #fetch_ftle()
     ftle_grad_to_polygons(out_dir / 'ftle')
+    sampling_geometry(out_dir)
     #bathy_to_geojson(directory=out_dir)
