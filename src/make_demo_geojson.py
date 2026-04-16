@@ -195,10 +195,15 @@ class CreateGeojson:
                 unit_id = fn.split('_')[1][:-4]
                 line_popup = f"unit {unit_id}"
                 point_popup =  f"unit {unit_id}<br>location at <br>{timestamp}"
+            elif "wirewalker" in fn:
+                line_popup = f"Wirewalker"
+                point_popup = f"Wirewalker<br>location at <br>{timestamp}"
+                line_style["color"] = "#fffb08"
             elif "drifter_" in fn:
                 drifter_name =  fn.split('.')[0].replace('drifter_', '')
                 line_popup = f"unit {drifter_name}"
                 point_popup = f"unit {drifter_name}<br>location at <br>{timestamp}"
+                line_style["color"] = "orange"
             else:
                 _log.warning(f"unknown data source {csv}. Skipping")
                 continue

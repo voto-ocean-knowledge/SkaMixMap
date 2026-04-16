@@ -31,14 +31,14 @@ user_dicts = {
                 "sst": {'min': degrees_to_Kelvin(4),
                         'max': degrees_to_Kelvin(7)},
                 "sst_forecast": {'min': 4,
-                                 'max': 36.5},
+                                 'max': 7},
                 "sss_forecast": {'min': 20,
                                  'max': 35},
             },
             # "forecast_product_date": "2025-08-03",
             # "satellite_product_date": "2025-07-29"
             "platforms_time_filter": {
-                'start': "2026-03-01",
+                'start': "2026-04-09",
                 'end': "2026-06-01"
             },
         }

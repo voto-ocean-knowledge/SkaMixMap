@@ -79,7 +79,7 @@ def ftle_grad_to_polygons(directory):
     }
     ds = xr.open_dataset("/data/temp/ftle.nc")
     timesteps = pd.date_range("2026-01-01T08:00:00", "2027-01-03T08:00:00")
-    timesteps = timesteps[timesteps > np.datetime64(datetime.datetime.now())][:4]
+    timesteps = timesteps[timesteps > np.datetime64(datetime.datetime.now()) - np.timedelta64(1, 'D')][:5]
     for day, timestep in enumerate(timesteps):
         lines = []
         for var_name, var_dict in ftle_vars_dict.items():

@@ -6,3 +6,4 @@ matplotlib
 cmocean
 websockets
 geopandas
+lxml

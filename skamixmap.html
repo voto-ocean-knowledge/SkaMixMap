@@ -144,11 +144,11 @@ let eddy_layer = L.geoJSON(eddy, {
 
 let sampling_layer = L.geoJson(sampling, {
 	pointToLayer: function (feature, latlng) {
-		return new L.CircleMarker(latlng, {radius: 7,
+		return new L.CircleMarker(latlng, {radius: 5,
 			color: 'black',
 			fillOpacity: 1,
 			fillColor: feature.properties.color,
-			weight: 0,});
+			weight: 0.5,});
 	},
 	onEachFeature: popupText
 });
